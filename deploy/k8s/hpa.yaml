@@ -1,0 +1,57 @@
+# HorizontalPodAutoscalers for the backend web tier and the celery worker tier.
+# Requires metrics-server installed in the cluster.
+# NOTE: beat is intentionally NOT autoscaled (must stay at 1 replica).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: web
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: worker
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: worker
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: worker
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: worker
+  minReplicas: 2
+  maxReplicas: 12
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 75
+  behavior:
+    scaleDown:
+      # Let in-flight tasks drain before removing workers.
+      stabilizationWindowSeconds: 300

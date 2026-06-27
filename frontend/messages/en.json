@@ -1,0 +1,858 @@
+{
+  "common": {
+    "appName": "Errora",
+    "tagline": "Exception tracking, the smart way",
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "copy": "Copy",
+    "copied": "Copied",
+    "comingSoon": "Coming soon",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "retry": "Retry",
+    "error": "Error",
+    "empty": "Nothing found",
+    "toman": "Toman",
+    "perMonth": "per month",
+    "perYear": "per year",
+    "yes": "Yes",
+    "no": "No",
+    "menu": "Menu",
+    "clearDate": "Clear date",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "locale": {
+    "switch": "Switch language",
+    "fa": "فارسی",
+    "en": "English"
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "docs": "Docs",
+    "login": "Sign in",
+    "register": "Start free",
+    "dashboard": "Dashboard"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Next-gen error tracking",
+      "titleLine1": "Catch errors before",
+      "titleLine2": "your users do",
+      "subtitle": "Errora groups your exceptions, measures performance, and proposes AI-powered fixes. Built-in GitLab integration, ready for Persian-speaking teams.",
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See pricing",
+      "trustedBy": "Trusted by engineering teams"
+    },
+    "stats": {
+      "events": "events processed",
+      "uptime": "uptime",
+      "latency": "avg ingest latency"
+    },
+    "features": {
+      "title": "Everything you need to fix errors",
+      "subtitle": "From capture to resolution, one cohesive workflow.",
+      "grouping": {
+        "title": "Smart grouping",
+        "desc": "Similar exceptions are automatically merged into a single issue, killing the noise so you see the real trend."
+      },
+      "performance": {
+        "title": "Performance monitoring",
+        "desc": "Surface slow transactions, heavy queries, and high-latency routes with distributed tracing."
+      },
+      "autofix": {
+        "title": "AI auto-fix",
+        "desc": "Errora's AI engine analyzes the root cause and proposes a corrective merge request on GitLab."
+      },
+      "integrations": {
+        "title": "GitLab integration",
+        "desc": "Link issues to commits and merge requests, and automate release tracking."
+      },
+      "alerts": {
+        "title": "Alerts & webhooks",
+        "desc": "Get notified via webhook, email, or your favorite channel on new errors or error-rate spikes."
+      },
+      "stacktrace": {
+        "title": "Rich stack traces",
+        "desc": "Full stack frames with in-app highlighting, line numbers, and surrounding context for fast debugging."
+      },
+      "logs": {
+        "title": "Structured logs",
+        "desc": "Ship logs alongside errors — searchable, level-filtered, tagged, and correlated to traces. No separate logging stack."
+      },
+      "mcp": {
+        "title": "AI agent access (MCP)",
+        "desc": "An MCP server lets agents like Claude and Cursor query projects, inspect issues + stack traces, and resolve them — authed by personal access tokens."
+      },
+      "sourcemaps": {
+        "title": "Source maps & symbolication",
+        "desc": "Upload release artifacts and minified JavaScript stack frames are mapped back to original files, lines, and source context."
+      },
+      "search": {
+        "title": "Full-text search",
+        "desc": "Fast issue and log search powered by native full-text indexing (PostgreSQL / MySQL / SQLite) with a graceful fallback everywhere else."
+      },
+      "issueTracking": {
+        "title": "GitLab issue tracking",
+        "desc": "Create a GitLab issue from an error or link an existing one — prefilled title and description, two-way from the issue page."
+      },
+      "retention": {
+        "title": "Data retention controls",
+        "desc": "Set how long events are kept per organization; a nightly job purges expired data automatically, with a sensible global default."
+      }
+    },
+    "autofixSection": {
+      "badge": "AI powered",
+      "title": "Let AI fix the error for you",
+      "desc": "With one click, Errora analyzes the full error context — stack trace, event, tags, and related code — and produces a proposed fix with an explanation.",
+      "step1": "Analyze the root cause",
+      "step2": "Generate a suggested patch",
+      "step3": "Open a GitLab merge request",
+      "cta": "Try it now"
+    },
+    "pricingSection": {
+      "title": "Pricing that scales with you",
+      "subtitle": "From side projects to enterprise scale.",
+      "cta": "See all plans"
+    },
+    "cta": {
+      "title": "Ready to beat the errors?",
+      "subtitle": "Send your first event in under five minutes.",
+      "button": "Create a free account"
+    },
+    "footer": {
+      "product": "Product",
+      "company": "Company",
+      "resources": "Resources",
+      "legal": "Legal",
+      "features": "Features",
+      "pricing": "Pricing",
+      "changelog": "Changelog",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "docs": "Docs",
+      "status": "Status",
+      "support": "Support",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "rights": "© {year} {brand}. All rights reserved.",
+      "madeWith": "Built for developers"
+    }
+  },
+  "pricing": {
+    "title": "Pricing",
+    "subtitle": "Pick a plan that matches your event volume. No contracts, cancel anytime.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "annualSave": "2 months free",
+    "perMonth": "/ mo",
+    "perYear": "/ yr",
+    "eventsQuota": "{count} events / month",
+    "mostPopular": "Most popular",
+    "choosePlan": "Choose plan",
+    "contactSales": "Contact sales",
+    "currentPlan": "Current plan",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "desc": "For personal and hobby projects",
+        "features": [
+          "5,000 events / month",
+          "1 project",
+          "7-day retention",
+          "Error grouping",
+          "Email alerts"
+        ]
+      },
+      "team": {
+        "name": "Team",
+        "desc": "For small, growing teams",
+        "features": [
+          "100,000 events / month",
+          "Unlimited projects",
+          "30-day retention",
+          "GitLab integration",
+          "AI auto-fix",
+          "Advanced webhooks & alerts"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "desc": "For production-scale products",
+        "features": [
+          "1,000,000 events / month",
+          "Unlimited projects",
+          "90-day retention",
+          "Performance monitoring",
+          "Role-based access control (RBAC)",
+          "Unlimited AI auto-fix",
+          "Priority support"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "desc": "For organizations with special needs",
+        "features": [
+          "Custom event volume",
+          "Custom retention",
+          "Dedicated / self-hosted",
+          "SSO & SAML",
+          "Service-level agreement (SLA)",
+          "Dedicated account manager"
+        ]
+      }
+    },
+    "payg": {
+      "badge": "Pay as you go",
+      "title": "Pay only for what you use",
+      "desc": "No fixed plan — every event beyond your quota is metered in real time.",
+      "sliderLabel": "Estimated monthly event volume",
+      "ratePer": "{price} Toman per 1,000 events",
+      "estimated": "Estimated monthly cost",
+      "includedFree": "First {count} events free",
+      "events": "events",
+      "startPayg": "Enable pay-as-you-go"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "q1": "What counts as an event?",
+      "a1": "Every exception or performance transaction sent to Errora counts as one event.",
+      "q2": "Can I change my plan?",
+      "a2": "Yes, you can upgrade or downgrade anytime; the difference is prorated.",
+      "q3": "What happens if I exceed my quota?",
+      "a3": "With pay-as-you-go enabled, extra events are metered and billed at period end; otherwise they are throttled until the next period."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Welcome back to your Errora dashboard.",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up",
+      "forgotPassword": "Forgot your password?"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Get started in under a minute.",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "access": {
+      "title": "Welcome",
+      "subtitle": "Sign in or create your account with your phone number.",
+      "submit": "Continue",
+      "hint": "New here? An account is created automatically on your first sign-in."
+    },
+    "methodPassword": "Password",
+    "methodOtp": "One-time code",
+    "fields": {
+      "name": "Full name",
+      "namePlaceholder": "Your name",
+      "identifier": "Email or phone number",
+      "identifierPlaceholder": "you@example.com or +98912…",
+      "phone": "Phone number",
+      "phonePlaceholder": "+98 912 …",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "code": "Verification code",
+      "codePlaceholder": "6-digit code",
+      "totp": "Authentication code",
+      "totpPlaceholder": "6-digit code"
+    },
+    "totpRequired": "Enter the 6-digit code from your authenticator app.",
+    "otp": {
+      "request": "Send code",
+      "verify": "Verify code",
+      "sent": "Verification code sent.",
+      "resend": "Resend",
+      "changeIdentifier": "Change email/phone",
+      "hint": "A code was sent to {identifier}."
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "invalidCredentials": "Incorrect username or password.",
+      "required": "This field is required.",
+      "invalidIdentifier": "Enter a valid email or phone number.",
+      "invalidTotp": "Invalid authentication code.",
+      "signupDisabled": "Signup is currently disabled. Please contact your administrator.",
+      "invalidPhone": "Enter a valid mobile number, e.g. 9123456789."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "overview": "Overview",
+      "projects": "Projects",
+      "issues": "Issues",
+      "performance": "Performance",
+      "logs": "Logs",
+      "aiFixes": "AI fixes",
+      "usage": "Usage",
+      "settings": "Settings",
+      "profile": "Profile",
+      "signOut": "Sign out",
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar"
+    },
+    "org": {
+      "switch": "Switch organization",
+      "create": "Create organization",
+      "createTitle": "New organization",
+      "name": "Organization name",
+      "personal": "Personal"
+    },
+    "overview": {
+      "title": "Overview",
+      "welcome": "Welcome, {name}",
+      "totalIssues": "Total issues",
+      "unresolved": "Unresolved",
+      "eventsToday": "Events today",
+      "projects": "Projects",
+      "recentIssues": "Recent issues",
+      "viewAll": "View all"
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "Manage your organization's projects.",
+      "create": "New project",
+      "createTitle": "Create project",
+      "name": "Project name",
+      "namePlaceholder": "e.g. Store backend",
+      "platform": "Platform",
+      "empty": "No projects yet. Create your first one.",
+      "dsnTitle": "Project created",
+      "dsnDesc": "Use this DSN in your SDK configuration. Keep it secret.",
+      "openIssues": "Open issues",
+      "lastEvent": "Last event",
+      "errors": "Errors",
+      "transactions": "Transactions"
+    },
+    "issues": {
+      "title": "Issues",
+      "subtitle": "Grouped exceptions for this project.",
+      "searchPlaceholder": "Search issues…",
+      "selectProject": "Select project",
+      "dateFrom": "From date",
+      "dateTo": "To date",
+      "columns": {
+        "issue": "Issue",
+        "level": "Level",
+        "trend": "Trend",
+        "events": "Events",
+        "age": "Age",
+        "lastSeen": "Last seen",
+        "assignee": "Assignee",
+        "priority": "Priority",
+        "status": "Status"
+      },
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "actions": {
+        "resolve": "Resolve",
+        "ignore": "Ignore",
+        "unresolve": "Reopen",
+        "more": "Actions"
+      },
+      "bulk": {
+        "selected": "{count} selected",
+        "selectAll": "Select all",
+        "selectOne": "Select issue",
+        "resolve": "Resolve",
+        "ignore": "Ignore",
+        "unresolve": "Reopen",
+        "priority": "Priority",
+        "clear": "Clear"
+      },
+      "pagination": {
+        "showing": "{from}–{to} of {total}",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "status": {
+        "all": "All",
+        "unresolved": "Unresolved",
+        "resolved": "Resolved",
+        "ignored": "Ignored",
+        "archived": "Archived"
+      },
+      "level": {
+        "all": "All levels",
+        "fatal": "Fatal",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Info",
+        "debug": "Debug"
+      },
+      "empty": "No issues match these filters.",
+      "timesSeen": "{count} times",
+      "unassigned": "Unassigned",
+      "assignedCount": "{count} assigned",
+      "unread": "Unread"
+    },
+    "performance": {
+      "title": "Performance",
+      "subtitle": "Transaction throughput, latency and failure rate for this project.",
+      "searchPlaceholder": "Search transactions…",
+      "period": "Time range",
+      "empty": "No transactions yet. Send a transaction from any Sentry SDK to get started.",
+      "pagination": "{from}–{to} of {total}",
+      "prev": "Previous",
+      "next": "Next",
+      "columns": {
+        "transaction": "Transaction",
+        "tpm": "TPM",
+        "p50": "p50",
+        "p95": "p95",
+        "failureRate": "Failure rate",
+        "lastSeen": "Last seen"
+      },
+      "periods": {
+        "1h": "Last hour",
+        "24h": "Last 24 hours",
+        "7d": "Last 7 days",
+        "14d": "Last 14 days",
+        "30d": "Last 30 days"
+      }
+    },
+    "logs": {
+      "title": "Logs",
+      "subtitle": "Search and filter structured logs across your services",
+      "searchPlaceholder": "Search logs… e.g. timeout level:error service:checkout",
+      "period": "Time range",
+      "empty": "No logs match your filters",
+      "pagination": "{from}–{to} of {total}",
+      "prev": "Previous",
+      "next": "Next",
+      "detailTitle": "Log details",
+      "environment": "Environment",
+      "release": "Release",
+      "trace": "Trace ID",
+      "span": "Span ID",
+      "attributes": "Attributes",
+      "columns": {
+        "time": "Time",
+        "level": "Level",
+        "message": "Message"
+      },
+      "levels": {
+        "trace": "Trace",
+        "debug": "Debug",
+        "info": "Info",
+        "warn": "Warn",
+        "error": "Error",
+        "fatal": "Fatal"
+      }
+    },
+    "transactionDetail": {
+      "back": "Back to performance",
+      "period": "Time range",
+      "tpm": "Throughput",
+      "count": "Events",
+      "failureRate": "Failure rate",
+      "noData": "No transactions in this time range. Try a wider range.",
+      "breakdown": "Span operations",
+      "distribution": "Duration distribution",
+      "samples": "Sample events",
+      "samplesHint": "Select an event to inspect its span waterfall.",
+      "duration": "Duration",
+      "status": "Status",
+      "trace": "Trace",
+      "when": "When",
+      "failed": "Failed",
+      "waterfall": "Span waterfall",
+      "noSpans": "This transaction has no child spans.",
+      "firstSeen": "First seen",
+      "description": "Description",
+      "spanStart": "Start offset",
+      "close": "Close",
+      "spansTruncated": "Showing the {shown} slowest of {total} spans.",
+      "attachedIssues": "Related issues"
+    },
+    "issueDetail": {
+      "culprit": "Culprit",
+      "firstSeen": "First seen",
+      "lastSeen": "Last seen",
+      "events": "Events",
+      "resolve": "Resolve",
+      "unresolve": "Reopen",
+      "ignore": "Ignore",
+      "unignore": "Unignore",
+      "assign": "Assign",
+      "assignTitle": "Assign issue",
+      "assignDesc": "Select organization members to assign to this issue.",
+      "assignSearch": "Search members…",
+      "assignEmpty": "No members available to assign.",
+      "assignedTo": "Assigned to {count}",
+      "autofix": "Auto-fix with AI",
+      "autofixStates": {
+        "idle": "Auto-fix with AI",
+        "pending": "Queued for analysis…",
+        "running": "Analyzing…",
+        "completed": "Fix ready",
+        "failed": "Analysis failed"
+      },
+      "autofixUnavailable": "Auto-fix service is not available yet.",
+      "autofixLive": "AI fix in progress",
+      "tabs": {
+        "details": "Details",
+        "events": "Events",
+        "comments": "Comments"
+      },
+      "stacktrace": "Stack trace",
+      "inApp": "In-app",
+      "tags": "Tags",
+      "request": "Request",
+      "user": "User",
+      "noStacktrace": "No stack trace was recorded for this event.",
+      "method": "Method",
+      "url": "URL",
+      "ip": "IP",
+      "eventId": "Event ID",
+      "transactionLabel": "Transaction",
+      "environment": "Environment",
+      "release": "Release",
+      "dist": "Distribution",
+      "serverName": "Server",
+      "handled": "Handled",
+      "unhandled": "Unhandled",
+      "mechanism": "Mechanism",
+      "suspect": "Suspect",
+      "suspectDesc": "Most likely cause — the deepest in-app frame in the stack.",
+      "viewInRepo": "View in repo",
+      "contexts": "Contexts",
+      "ctx": {
+        "browser": "Browser",
+        "os": "Operating system",
+        "runtime": "Runtime",
+        "device": "Device",
+        "trace": "Trace"
+      },
+      "copyAsCurl": "Copy as cURL",
+      "breadcrumbs": "Breadcrumbs",
+      "bindings": "Bindings",
+      "packages": "Packages",
+      "searchPackages": "Filter packages…",
+      "showAll": "Show all",
+      "showLess": "Show less",
+      "sdk": "SDK",
+      "grouping": "Event grouping",
+      "groupingHash": "Hash",
+      "groupingConfig": "Config",
+      "groupingComponents": "Grouping components",
+      "breadcrumbSearch": "Search breadcrumbs…",
+      "breadcrumbCategory": "Category",
+      "breadcrumbAll": "All categories",
+      "breadcrumbSort": "Sort",
+      "breadcrumbOldest": "Oldest first",
+      "breadcrumbNewest": "Newest first",
+      "breadcrumbNoMatch": "No breadcrumbs match these filters.",
+      "backToEvents": "Back to events",
+      "copyMarkdown": "Copy as Markdown",
+      "eventsEmpty": "No events have been recorded for this issue.",
+      "eventTime": "Time",
+      "eventEnvironment": "Environment",
+      "eventClient": "Client",
+      "eventRelease": "Release",
+      "eventMessage": "Message",
+      "commentsEmpty": "No comments yet. Start the discussion.",
+      "commentPlaceholder": "Write a comment…",
+      "commentSubmit": "Comment",
+      "commentAnonymous": "Unknown",
+      "you": "(You)",
+      "symbolicated": "Source map",
+      "symbolicatedHint": "Resolved from an uploaded source map",
+      "users": "Users",
+      "referrer": "Referrer",
+      "copyFilePath": "Copy file path",
+      "openLineIn": "Open this line in {provider}",
+      "bookmark": "Bookmark",
+      "bookmarked": "Bookmarked",
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "shareUrl": "Copy share URL",
+      "trend": "Trend",
+      "trendTotal": "{count} events",
+      "tracker": {
+        "title": "Issue tracking",
+        "add": "Link issue",
+        "empty": "No linked issues yet.",
+        "dialogTitle": "Track this issue",
+        "createTab": "Create",
+        "linkTab": "Link",
+        "repository": "Repository",
+        "issueTitle": "Title",
+        "description": "Description",
+        "createSubmit": "Create issue",
+        "searchIssues": "Search issues",
+        "searchPlaceholder": "Search by title…",
+        "noResults": "No matching issues.",
+        "comment": "Comment (optional)",
+        "commentPlaceholder": "Add a comment on the linked issue…",
+        "linkSubmit": "Link issue",
+        "error": "Something went wrong."
+      },
+      "framesMore": "Show {count} more frames"
+    },
+    "usage": {
+      "title": "Usage",
+      "subtitle": "Event consumption for the current period.",
+      "consumed": "Events consumed",
+      "quota": "Monthly quota",
+      "ofQuota": "{percent}% of quota",
+      "unlimited": "Unlimited",
+      "overage": "Overage cost",
+      "period": "Current period",
+      "byDay": "Daily usage",
+      "breakdown": "Usage breakdown",
+      "daily": "Daily",
+      "monthly": "Monthly",
+      "tableDate": "Date",
+      "tableMonth": "Month",
+      "tableEvents": "Events",
+      "unavailable": "Usage data is not available yet.",
+      "remaining": "{count} events remaining"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your account information and security settings.",
+      "infoTitle": "Personal information",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "save": "Save changes",
+      "saved": "Profile updated.",
+      "passwordTitle": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordSaved": "Password updated.",
+      "changePassword": "Update password",
+      "totpTitle": "Two-factor authentication (TOTP)",
+      "totpDesc": "Add a time-based one-time code from an authenticator app at sign-in.",
+      "totpEnabled": "Two-factor authentication is enabled.",
+      "totpDisabled": "Two-factor authentication is disabled.",
+      "totpSetup": "Set up two-factor",
+      "totpScan": "Scan this QR code with your authenticator app, or enter the secret manually, then enter the 6-digit code to confirm.",
+      "totpSecret": "Secret",
+      "totpCode": "6-digit code",
+      "totpEnable": "Enable",
+      "totpDisable": "Disable",
+      "totpDisablePrompt": "Enter a current code or your password to disable.",
+      "cancel": "Cancel",
+      "invalidPhone": "Enter a valid mobile number, e.g. 9123456789."
+    },
+    "aiFixes": {
+      "title": "AI fixes",
+      "subtitle": "Status and history of AI auto-fix runs.",
+      "empty": "No AI fixes have run yet.",
+      "allStatuses": "All statuses",
+      "columns": {
+        "issue": "Issue",
+        "project": "Project",
+        "agent": "Agent",
+        "status": "Status",
+        "when": "Started"
+      },
+      "status": {
+        "queued": "Queued",
+        "analyzing": "Analyzing",
+        "generating": "Generating fix",
+        "creating_mr": "Creating MR",
+        "completed": "Completed",
+        "failed": "Failed"
+      },
+      "viewMr": "View merge request",
+      "explanation": "Explanation",
+      "error": "Error",
+      "tokens": "{count} tokens",
+      "triggeredBy": "by {name}"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Organization, members, and integrations.",
+      "tabs": {
+        "organization": "Organization",
+        "members": "Members & roles",
+        "integrations": "Integrations",
+        "webhooks": "Webhooks & alerts",
+        "ai": "AI",
+        "mcp": "MCP"
+      },
+      "organization": {
+        "title": "Organization",
+        "desc": "Rename your organization. Owners and admins only.",
+        "name": "Organization name",
+        "saved": "Saved.",
+        "noPermission": "Only owners and admins can rename the organization."
+      },
+      "retention": {
+        "title": "Data retention",
+        "desc": "Automatically delete events and logs older than the retention period.",
+        "useDefault": "Use the default ({days} days)",
+        "days": "Retention period (days)",
+        "hint": "Between 1 and 3650 days. Older issues, events and logs are purged nightly.",
+        "saved": "Retention updated",
+        "noPermission": "Only owners and admins can change data retention."
+      },
+      "mcp": {
+        "connectTitle": "Connect an agent",
+        "connectDesc": "Errora exposes an MCP server so AI agents (Claude, Cursor, …) can query your issues, logs and projects. Point your MCP client at the endpoint below and authenticate with a personal access token.",
+        "endpoint": "Endpoint",
+        "configExample": "Example client config",
+        "title": "Personal access tokens",
+        "desc": "Bearer tokens for the MCP server and API. Treat them like passwords.",
+        "createdOnce": "Copy your token now — it won't be shown again.",
+        "tokenName": "Token name",
+        "tokenNamePlaceholder": "e.g. Claude Desktop",
+        "create": "Create token",
+        "lastUsed": "last used {when}",
+        "neverUsed": "never used"
+      },
+      "members": {
+        "title": "Organization members",
+        "invite": "Invite member",
+        "email": "Email",
+        "role": "Role",
+        "roles": {
+          "owner": "Owner",
+          "admin": "Admin",
+          "member": "Member",
+          "viewer": "Viewer"
+        },
+        "invitePlaceholder": "name@example.com",
+        "inviteSent": "Invitation sent.",
+        "send": "Send invite"
+      },
+      "integrations": {
+        "gitlab": "GitLab",
+        "gitlabDesc": "Link issues to repositories and merge requests.",
+        "connect": "Connect",
+        "connected": "Connected",
+        "github": "GitHub",
+        "githubDesc": "Sync with GitHub repositories.",
+        "slack": "Slack",
+        "slackDesc": "Send alerts to Slack channels.",
+        "baseUrl": "Instance URL",
+        "token": "Access token",
+        "tokenPlaceholder": "glpat-…",
+        "sync": "Sync",
+        "repositories": "Repositories"
+      },
+      "webhooks": {
+        "title": "Alert channels",
+        "add": "Add channel",
+        "url": "Webhook URL",
+        "type": "Type",
+        "empty": "No alert channels defined yet.",
+        "events": {
+          "issue_created": "New unique issue",
+          "event_received": "New event",
+          "issue_regressed": "Issue regressed",
+          "autofix_started": "Auto-fix started",
+          "autofix_mr_created": "Auto-fix MR created",
+          "autofix_failed": "Auto-fix failed"
+        },
+        "channelsTitle": "Channels",
+        "rulesTitle": "Alert rules",
+        "name": "Name",
+        "recipients": "Recipients",
+        "event": "Event",
+        "channel": "Channel",
+        "addRule": "Add rule",
+        "rulesEmpty": "No alert rules yet.",
+        "deliveriesTitle": "Delivery log",
+        "deliveriesEmpty": "No deliveries yet.",
+        "deliveriesNoMatch": "No deliveries match these filters.",
+        "delivered": "Delivered",
+        "failed": "Failed",
+        "statusCol": "Status",
+        "sentAt": "Sent at",
+        "filterAllStatuses": "All statuses",
+        "filterAllChannels": "All channels",
+        "filterAllEvents": "All events",
+        "messageTemplate": "Message template (optional)",
+        "payloadTemplate": "Payload template",
+        "templateHint": "Wrap each placeholder in double curly braces: title, body, url, event, level, issue_id.",
+        "channelTypes": {
+          "webhook": "HTTP Webhook",
+          "mattermost": "Mattermost",
+          "email": "Email",
+          "sms": "SMS"
+        }
+      },
+      "ai": {
+        "title": "AI agents",
+        "provider": "Provider",
+        "model": "Model",
+        "apiKey": "API key",
+        "name": "Name",
+        "namePlaceholder": "e.g. Claude fixer",
+        "addAgent": "Add agent",
+        "editAgent": "Edit agent",
+        "empty": "No AI agents configured yet. Add one to enable auto-fix.",
+        "autofixEnabled": "Enable auto-fix",
+        "desc": "Configure one or more agents to analyze and auto-fix errors.",
+        "baseUrl": "Base URL (optional)",
+        "autoTrigger": "Auto-open a fix MR for new issues",
+        "keySet": "Key configured",
+        "saved": "Saved.",
+        "keyNeeded": "API key required",
+        "keyHint": "Bring your own API key from your Claude or Cursor account. It is stored encrypted and used via the official SDK.",
+        "disabled": "Disabled",
+        "providers": {
+          "claude": "Claude",
+          "openai": "OpenAI-compatible",
+          "cursor": "Cursor"
+        }
+      }
+    }
+  },
+  "platforms": {
+    "javascript": "JavaScript",
+    "python": "Python",
+    "php": "PHP",
+    "php-laravel": "Laravel",
+    "node": "Node.js",
+    "go": "Go",
+    "other": "Other"
+  },
+  "time": {
+    "now": "just now",
+    "secondsAgo": "{count}s ago",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "monthsAgo": "{count}mo ago",
+    "yearsAgo": "{count}y ago"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "desc": "The page you were looking for doesn't exist.",
+    "home": "Back home"
+  }
+}

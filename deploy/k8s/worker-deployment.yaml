@@ -1,0 +1,86 @@
+# Celery worker tier (reuses the backend image).
+#
+# DESIGN CHOICE — one deployment consuming all queues:
+#   This single deployment consumes ingest,ai,notifications,default. It is the
+#   simplest setup and the HPA (hpa.yaml) scales it on CPU.
+#
+#   For workloads where slow AI jobs would starve fast ingestion, split into
+#   per-queue deployments so each can scale independently — e.g. duplicate this
+#   manifest changing `name`, the `-Q` flag, and replica/HPA targets:
+#       errora-worker-ingest        -Q ingest
+#       errora-worker-ai            -Q ai            (fewer replicas, more memory)
+#       errora-worker-notifications -Q notifications
+#       errora-worker-default       -Q default
+#   Settings already route apps.ingest/ai/notifications tasks to their queues.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: worker
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: worker
+      app.kubernetes.io/part-of: errora
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: worker
+        app.kubernetes.io/part-of: errora
+        app.kubernetes.io/component: worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      # Give in-flight tasks time to finish on rollout / scale-down.
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: worker
+          image: errora/backend:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - celery
+            - -A
+            - errora
+            - worker
+            - -Q
+            - ingest,ai,notifications,default
+            - -l
+            - info
+          envFrom:
+            - configMapRef:
+                name: errora-config
+            - secretRef:
+                name: errora-secrets
+          # Liveness via celery ping to itself; restarts a wedged worker.
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "celery -A errora inspect ping -d celery@$HOSTNAME"]
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 15
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1.5Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

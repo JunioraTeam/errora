@@ -1,0 +1,74 @@
+# Redis 7 — Celery broker/result backend and Django cache.
+# Single replica Deployment (ephemeral). Persistence is not required for a
+# broker/cache; for durable results use a managed Redis or a StatefulSet+PVC.
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: cache
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: errora
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+      app.kubernetes.io/part-of: errora
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redis
+        app.kubernetes.io/part-of: errora
+        app.kubernetes.io/component: cache
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        runAsNonRoot: true
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args: ["--save", "60", "1", "--loglevel", "warning"]
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

@@ -1,0 +1,37 @@
+# Kustomization for the full Errora stack.
+#
+#   kubectl apply -k deploy/k8s/
+#
+# IMPORTANT:
+#   - The Secret is intentionally EXCLUDED from this kustomization so real
+#     secrets are never applied from a committed file. Create errora-secrets
+#     out-of-band first (see secret.example.yaml / deploy/k8s/README.md).
+#   - The migration Job (backend-migrate-job.yaml) is also excluded; run it
+#     explicitly before/after applying so schema changes land in order.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: errora
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - redis.yaml
+  - backend-deployment.yaml
+  - worker-deployment.yaml
+  - beat-deployment.yaml
+  - frontend-deployment.yaml
+  - ingress.yaml
+  - hpa.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: errora
+
+# Pin images here per release — set newTag to a version or, better, a digest
+# instead of the mutable :latest, for reproducible rollouts.
+images:
+  - name: errora/backend
+    newTag: latest
+  - name: errora/frontend
+    newTag: latest

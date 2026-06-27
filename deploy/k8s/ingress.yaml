@@ -1,0 +1,65 @@
+# nginx Ingress + TLS via cert-manager.
+#
+# Routing (most specific path wins under nginx pathType: Prefix):
+#   /api     -> backend  (REST API /api/v1/* AND Sentry-style ingest
+#                         /api/<project_id>/store|envelope/)
+#   /admin   -> backend  (Django admin)
+#   /static  -> backend  (whitenoise-served collected static)
+#   /        -> frontend (Next.js)
+#
+# Prereqs: ingress-nginx controller + cert-manager with a ClusterIssuer named
+# "letsencrypt-prod". Point DNS for errora.example.com at the ingress LB.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: errora
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: errora
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Ingest payloads (stack traces, envelopes) can be sizeable.
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - errora.example.com
+      secretName: errora-tls   # cert-manager populates this
+  rules:
+    - host: errora.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+          - path: /static
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+          # Catch-all to the Next.js frontend.
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 3000

@@ -1,0 +1,27 @@
+# Non-secret configuration shared by backend, worker and beat.
+# Secrets (SECRET_KEY, JWT_SECRET, API keys, DB/Redis URLs with credentials)
+# live in the Secret — see secret.example.yaml.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: errora-config
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: errora
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: config
+data:
+  DEBUG: "0"
+  ALLOWED_HOSTS: "errora.example.com,backend,backend.errora.svc.cluster.local"
+  SITE_URL: "https://errora.example.com"
+  FRONTEND_URL: "https://errora.example.com"
+  CORS_ALLOWED_ORIGINS: "https://errora.example.com"
+  LANGUAGE_CODE: "fa"
+  AI_DEFAULT_PROVIDER: "claude"
+  # Datastore hostnames resolve via in-cluster service DNS.
+  # NOTE: REDIS_URL / CELERY_BROKER_URL contain no credentials here, so they
+  # live in config. DATABASE_URL carries the password and lives in the Secret.
+  REDIS_URL: "redis://redis:6379/0"
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+  DJANGO_SETTINGS_MODULE: "errora.settings"

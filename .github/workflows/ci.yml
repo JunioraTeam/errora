@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend (lint + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: Ruff (lint + format)
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Migrations are in sync
+        run: python manage.py makemigrations --check --dry-run
+        env:
+          SECRET_KEY: ci-secret
+          DEBUG: "true"
+          DATABASE_URL: "sqlite:////tmp/ci.db"
+          CELERY_BROKER_URL: "memory://"
+      - name: Pytest
+        run: pytest -q
+        env:
+          SECRET_KEY: ci-secret
+          DEBUG: "true"
+          DATABASE_URL: "sqlite:////tmp/ci.db"
+          CELERY_BROKER_URL: "memory://"
+
+  frontend:
+    name: Frontend (lint + types + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Biome
+        run: pnpm exec biome check .
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+      - name: Vitest
+        run: pnpm test
+      - name: i18n parity (fa/en key sets match)
+        run: |
+          node -e "const en=require('./messages/en.json'),fa=require('./messages/fa.json');const k=o=>{const s=new Set();(function w(x,p){for(const[a,b]of Object.entries(x)){const q=p?p+'.'+a:a;b&&typeof b==='object'?w(b,q):s.add(q)}})(o);return s};const E=k(en),F=k(fa);const only=(A,B)=>[...A].filter(x=>!B.has(x));const a=only(E,F),b=only(F,E);if(a.length||b.length){console.error('i18n mismatch',{onlyEn:a,onlyFa:b});process.exit(1)}console.log('i18n parity OK')"

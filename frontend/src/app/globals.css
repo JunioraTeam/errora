@@ -1,0 +1,309 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — Claude / Anthropic aesthetic                        */
+/* Warm cream light surfaces, near-black dark, coral/terracotta accent */
+/* ------------------------------------------------------------------ */
+
+:root {
+  /* Light theme (warm off-white / cream) */
+  --background: #faf9f5;
+  --background-elevated: #f4f2ec;
+  --foreground: #1a1a18;
+  --card: #ffffff;
+  --card-foreground: #1a1a18;
+  --muted: #f0eee7;
+  --muted-foreground: #6b6a64;
+  --border: #e6e3da;
+  --input: #ffffff;
+  --ring: #da7756;
+
+  /* Claude signature clay / terracotta accent */
+  --accent: #da7756;
+  --accent-hover: #c8623f;
+  --accent-foreground: #ffffff;
+  --accent-soft: #f5e6df;
+
+  /* Semantic levels */
+  --level-fatal: #b4232a;
+  --level-error: #d8553e;
+  --level-warning: #c98a1e;
+  --level-info: #3a7ca5;
+  --level-debug: #6b6a64;
+
+  --success: #2f8f5b;
+  --danger: #c8412e;
+
+  /* Syntax highlighting (light) */
+  --syntax-keyword: #9333a8;
+  --syntax-string: #2f8f5b;
+  --syntax-number: #b45309;
+  --syntax-literal: #b45309;
+  --syntax-property: #1d62b3;
+  --syntax-function: #5b4bc4;
+
+  --radius: 0.875rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1.25rem;
+
+  --shadow-sm: 0 1px 2px rgba(26, 26, 24, 0.05);
+  --shadow: 0 2px 8px rgba(26, 26, 24, 0.06), 0 1px 2px rgba(26, 26, 24, 0.04);
+  --shadow-lg: 0 12px 40px rgba(26, 26, 24, 0.1);
+}
+
+.dark {
+  /* Dark theme (near-black) */
+  --background: #1a1a18;
+  --background-elevated: #232320;
+  --foreground: #f5f4ef;
+  --card: #232320;
+  --card-foreground: #f5f4ef;
+  --muted: #2c2c28;
+  --muted-foreground: #a3a299;
+  --border: #34342f;
+  --input: #2c2c28;
+  --ring: #e08a6b;
+
+  --accent: #e08a6b;
+  --accent-hover: #eb9b7d;
+  --accent-foreground: #1a1a18;
+  --accent-soft: #3a2c25;
+
+  --level-fatal: #f06a6a;
+  --level-error: #ef7a5e;
+  --level-warning: #e0b04a;
+  --level-info: #6ab0d8;
+  --level-debug: #a3a299;
+
+  --success: #5bc98a;
+  --danger: #ef7a5e;
+
+  /* Syntax highlighting (dark) */
+  --syntax-keyword: #d9a3e8;
+  --syntax-string: #7ed4a0;
+  --syntax-number: #e0b04a;
+  --syntax-literal: #e0b04a;
+  --syntax-property: #6ab0d8;
+  --syntax-function: #b3a8f0;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 50px rgba(0, 0, 0, 0.55);
+}
+
+/* ------------------------------------------------------------------ */
+/* Tailwind v4 theme bridge — expose tokens as utilities               */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-level-fatal: var(--level-fatal);
+  --color-level-error: var(--level-error);
+  --color-level-warning: var(--level-warning);
+  --color-level-info: var(--level-info);
+  --color-level-debug: var(--level-debug);
+
+  --radius-sm: var(--radius-sm);
+  --radius-DEFAULT: var(--radius);
+  --radius-lg: var(--radius-lg);
+
+  --font-sans:
+    var(--font-vazirmatn), "Vazirmatn", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Persian numerals look natural with Vazirmatn; keep tabular for tables */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilities                                                           */
+/* ------------------------------------------------------------------ */
+
+/* Subtle grid / dotted background used on the landing hero */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    #000 40%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    #000 40%,
+    transparent 100%
+  );
+}
+
+.glow-accent {
+  background: radial-gradient(
+    600px circle at 50% -10%,
+    color-mix(in srgb, var(--accent) 26%, transparent),
+    transparent 60%
+  );
+}
+
+.text-gradient {
+  background: linear-gradient(
+    100deg,
+    var(--foreground) 0%,
+    var(--accent) 60%,
+    var(--accent-hover) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--background-elevated) 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Range slider thumb (used by the PAYG estimator) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  border: 3px solid var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  border: 3px solid var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+/* In RTL the visual fill should grow from the right edge */
+[dir="rtl"] input[type="range"] {
+  --slider-dir: left;
+}
+[dir="ltr"] input[type="range"] {
+  --slider-dir: right;
+}
+
+/* Theme switch: let the JS-driven circular clip reveal play instead of the
+   default view-transition cross-fade. The new snapshot stacks on top of the old. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 1;
+}
+::view-transition-old(root) {
+  z-index: 0;
+}
+
+/* Every interactive element gets a pointer cursor (disabled ones don't). */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+label[for],
+summary,
+select:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="file"]:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}

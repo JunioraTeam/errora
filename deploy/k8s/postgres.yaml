@@ -1,0 +1,104 @@
+# Postgres 16 as a StatefulSet with a PersistentVolumeClaim template and a
+# headless-style ClusterIP Service. For production scale consider a managed
+# database or an operator (CloudNativePG, Zalando); this is a sensible default.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/part-of: errora
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: database
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+      app.kubernetes.io/part-of: errora
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/part-of: errora
+        app.kubernetes.io/component: database
+    spec:
+      securityContext:
+        # postgres:16-alpine runs as uid 70; fsGroup makes the PVC writable.
+        fsGroup: 70
+        runAsUser: 70
+        runAsGroup: 70
+        runAsNonRoot: true
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "errora"
+            - name: POSTGRES_DB
+              value: "errora"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: errora-secrets
+                  key: POSTGRES_PASSWORD
+            # Data lives in a subdir so lost+found on some volumes doesn't break init.
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U errora -d errora"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U errora -d errora"]
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: postgres
+          app.kubernetes.io/part-of: errora
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+        # storageClassName: standard   # set to your cluster's StorageClass

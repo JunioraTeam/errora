@@ -1,0 +1,28 @@
+# Pinned runtime deps (see pyproject.toml for full spec). Generated for Docker layer caching.
+Django==6.0.6
+djangorestframework==3.17.1
+adrf==0.1.13
+django-environ==0.14.0
+django-cors-headers==4.9.0
+django-filter==25.2
+psycopg[binary]==3.3.4
+mysqlclient==2.2.8
+celery==5.6.3
+redis==8.0.1
+hiredis==3.4.0
+drf-spectacular==0.29.0
+PyJWT==2.13.0
+cryptography==49.0.0
+requests==2.34.2
+httpx==0.28.1
+python-gitlab==8.4.0
+openai==2.44.0
+anthropic==0.112.0
+claude-agent-sdk==0.2.110
+cursor-sdk==0.1.8
+msgpack==1.2.1
+# Optional: only needed when EVENT_STORE_BACKEND=clickhouse
+clickhouse-connect==1.3.0
+gunicorn==26.0.0
+uvicorn==0.49.0
+whitenoise==6.12.0

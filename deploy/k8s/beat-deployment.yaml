@@ -1,0 +1,60 @@
+# Celery beat scheduler (reuses the backend image).
+# MUST run as a single replica — multiple beat instances would double-fire
+# scheduled tasks. Do NOT scale this with an HPA.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beat
+  namespace: errora
+  labels:
+    app.kubernetes.io/name: beat
+    app.kubernetes.io/part-of: errora
+    app.kubernetes.io/component: scheduler
+spec:
+  replicas: 1
+  strategy:
+    # Recreate ensures only one beat exists at a time during rollouts.
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: beat
+      app.kubernetes.io/part-of: errora
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: beat
+        app.kubernetes.io/part-of: errora
+        app.kubernetes.io/component: scheduler
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: beat
+          image: errora/backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["celery", "-A", "errora", "beat", "-l", "info"]
+          envFrom:
+            - configMapRef:
+                name: errora-config
+            - secretRef:
+                name: errora-secrets
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

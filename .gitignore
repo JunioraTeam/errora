@@ -1,0 +1,38 @@
+.vscode.
+.specstory/
+.idea/
+
+# Secrets
+.env
+*.env.local
+
+# Python / Django backend
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.sqlite3
+staticfiles/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node / Next.js frontend
+node_modules/
+.next/
+out/
+frontend/.env*.local
+npm-debug.log*
+yarn-error.log*
+
+# PHP / Laravel SDK
+sdks/laravel/vendor/
+sdks/laravel/composer.lock
+
+# OS
+.DS_Store
+
+# scratch sample payload (not needed in repo)
+sample-event.json
