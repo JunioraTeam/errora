@@ -1,0 +1,61 @@
+# =============================================================================
+# Build context excludes for the merged (backend + frontend) production image.
+# Context is the repo root, so we must trim BOTH apps' heavy/dev-only dirs or
+# the build will ship gigabytes of caches, venvs and a 25 MB dev sqlite db.
+# =============================================================================
+
+# --- Version control / CI / editors ---
+.git
+.gitignore
+.github
+.vscode/
+.idea/
+.DS_Store
+.specstory/
+
+# --- Docs & local-only files (kept out of the image) ---
+*.md
+docs/
+
+# --- Secrets — never bake into the image ---
+**/.env
+**/.env.*
+!**/.env.example
+
+# --- Backend: Python caches, venvs, build artifacts, local db ---
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.py[cod]
+backend/*.egg-info/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/coverage.xml
+backend/.venv/
+backend/venv/
+backend/env/
+backend/staticfiles/          # regenerated via collectstatic inside the image
+backend/*.sqlite3             # dev/e2e databases
+backend/tests/
+
+# --- Frontend: node_modules & build output (reinstalled/rebuilt in-image) ---
+frontend/node_modules/
+frontend/.pnpm-store/
+frontend/.next/
+frontend/.next-e2e/
+frontend/out/
+frontend/dist/
+frontend/build/
+frontend/.turbo/
+frontend/*.tsbuildinfo
+frontend/test-results/
+frontend/__tests__/
+frontend/e2e/
+frontend/playwright-report/
+
+# --- Misc ---
+deploy/
+sentry/
+sample-event.json

@@ -41,7 +41,21 @@ import type {
   User,
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:8000";
+// Resolve the API origin. Priority:
+//   1) NEXT_PUBLIC_API_URL  — baked at build time (use when the API lives on a
+//      different origin than the frontend).
+//   2) window.location.origin — runtime fallback for the merged single-origin
+//      deployment, where the frontend and API share a domain behind one proxy.
+//   3) http://localhost:8000 — dev default (also the SSR value; every consumer
+//      of this module is a client component, so no request runs server-side).
+function resolveApiBase(): string {
+  const env = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+  if (env) return env;
+  if (typeof window !== "undefined") return window.location.origin;
+  return "http://localhost:8000";
+}
+
+const API_BASE = resolveApiBase();
 const API_PREFIX = `${API_BASE}/api/v1`;
 
 export class ApiError extends Error {
