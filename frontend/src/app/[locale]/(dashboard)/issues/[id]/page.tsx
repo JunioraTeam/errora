@@ -331,7 +331,10 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
           <div key={m.label} className="bg-background px-5 py-3 sm:px-8">
             <div className="text-xs text-muted-foreground">{m.label}</div>
             <div
-              className={cn("mt-0.5 truncate text-sm font-medium", m.mono && "font-mono")}
+              className={cn(
+                "mt-0.5 break-words sm:truncate text-sm font-medium",
+                m.mono && "font-mono"
+              )}
               dir={m.mono ? "ltr" : undefined}
             >
               {m.value || "—"}

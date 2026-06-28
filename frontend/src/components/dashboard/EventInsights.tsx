@@ -74,7 +74,7 @@ function KeyVal({ k, v, mono }: { k: string; v: React.ReactNode; mono?: boolean 
     <div className="flex items-start justify-between gap-3 py-1 text-sm">
       <dt className="shrink-0 text-muted-foreground">{k}</dt>
       <dd
-        className={cn("min-w-0 truncate text-end", mono && "font-mono text-xs")}
+        className={cn("min-w-0 break-words sm:truncate text-end", mono && "font-mono text-xs")}
         dir={mono ? "ltr" : undefined}
         title={typeof v === "string" ? v : undefined}
       >
@@ -151,8 +151,10 @@ export function SuspectCommit({
       <p className="mb-2 text-xs text-muted-foreground">{t("suspectDesc")}</p>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0 font-mono text-sm" dir="ltr">
-          {frame.function && <span className="font-semibold">{frame.function}</span>}
-          <span className="block truncate text-xs text-muted-foreground">
+          {frame.function && (
+            <span className="block break-all sm:truncate font-semibold">{frame.function}</span>
+          )}
+          <span className="block break-all sm:truncate text-xs text-muted-foreground">
             {frame.filename}
             {frame.lineno ? `:${localizeDigits(frame.lineno, locale)}` : ""}
           </span>
@@ -254,21 +256,20 @@ export function HttpRequestCard({ request }: { request: EventData["request"] }) 
         </div>
       )}
       {headers.length > 0 && (
-        <div className="overflow-hidden rounded-[var(--radius-sm)] border border-border">
-          <table className="w-full text-xs" dir="ltr">
-            <tbody className="divide-y divide-border">
-              {headers.map(([k, v]) => (
-                <tr key={k}>
-                  <td className="whitespace-nowrap bg-muted/40 px-3 py-1.5 font-mono font-medium">
-                    {k}
-                  </td>
-                  <td className="break-all px-3 py-1.5 font-mono text-muted-foreground">
-                    {String(v)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div
+          className="divide-y divide-border overflow-hidden rounded-[var(--radius-sm)] border border-border text-xs"
+          dir="ltr"
+        >
+          {headers.map(([k, v]) => (
+            <div key={k} className="flex flex-col sm:flex-row">
+              <div className="shrink-0 break-all bg-muted/40 px-3 py-1.5 font-mono font-medium sm:w-44">
+                {k}
+              </div>
+              <div className="min-w-0 break-all px-3 py-1.5 font-mono text-muted-foreground">
+                {String(v)}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </Card>
@@ -497,7 +498,7 @@ export function PackagesCard({ modules }: { modules?: Record<string, string> }) 
       <dl className="max-h-64 space-y-px overflow-y-auto">
         {shown.map(([k, v]) => (
           <div key={k} className="flex items-center justify-between gap-3 text-xs" dir="ltr">
-            <span className="min-w-0 truncate font-mono">{k}</span>
+            <span className="min-w-0 break-all sm:truncate font-mono">{k}</span>
             <span className="shrink-0 font-mono text-muted-foreground">{v}</span>
           </div>
         ))}
@@ -553,7 +554,7 @@ export function GroupingCard({ grouping }: { grouping?: EventData["_grouping"] }
           <div className="mb-1 text-xs text-muted-foreground">{t("groupingComponents")}</div>
           <ul className="max-h-40 space-y-0.5 overflow-y-auto rounded-[var(--radius-sm)] bg-muted/40 p-2 font-mono text-[11px]">
             {grouping.components.map((c, i) => (
-              <li key={i} className="truncate" dir="ltr">
+              <li key={i} className="break-all sm:truncate" dir="ltr">
                 {c}
               </li>
             ))}
@@ -577,7 +578,7 @@ export function TagsCard({ tags }: { tags: EventData["tags"] }) {
         {pairs.map(([k, v]) => (
           <Badge key={k} variant="outline" className="max-w-full font-mono text-xs">
             <span className="text-muted-foreground">{k}</span>
-            <span className="truncate text-foreground" dir="ltr" title={v}>
+            <span className="break-all sm:truncate text-foreground" dir="ltr" title={v}>
               {v}
             </span>
           </Badge>
@@ -621,7 +622,7 @@ export function EventDetailBody({
       <EventMeta data={data} />
       <SuspectCommit exceptions={exceptions} repository={repository} />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-6">
           <div className="space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
