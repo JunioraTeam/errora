@@ -1,13 +1,13 @@
 "use client";
 
-import { ArrowLeft, KeyRound, Lock } from "lucide-react";
+import { ArrowLeft, KeyRound, Lock, Mail } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/Button";
-import { Field, Input, isValidIranMobile, PhoneInput } from "@/components/ui/Input";
+import { Field, Input, isValidEmail } from "@/components/ui/Input";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useRouter } from "@/i18n/routing";
@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 type Method = "password" | "otp";
 
 /**
- * Unified auth screen: a single phone + password form that logs in an existing
- * account or registers a new one (the backend decides). Name/email are NOT
- * collected here — users set them later on the dashboard profile page.
+ * Unified auth screen: a single email + password form that logs in an existing
+ * account or registers a new one (the backend decides). Name is NOT collected
+ * here — users set it later on the dashboard profile page.
  */
 export function AuthForm() {
   const t = useTranslations("auth");
@@ -54,8 +54,8 @@ export function AuthForm() {
       setError(t("errors.required"));
       return;
     }
-    if (!isValidIranMobile(identifier)) {
-      setError(t("errors.invalidPhone"));
+    if (!isValidEmail(identifier)) {
+      setError(t("errors.invalidEmail"));
       return;
     }
     setLoading(true);
@@ -98,8 +98,8 @@ export function AuthForm() {
   async function onRequestOtp(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!isValidIranMobile(identifier)) {
-      setError(t("errors.invalidPhone"));
+    if (!isValidEmail(identifier)) {
+      setError(t("errors.invalidEmail"));
       return;
     }
     setLoading(true);
@@ -197,11 +197,23 @@ export function AuthForm() {
                 exit={{ opacity: 0 }}
                 className="mt-5 space-y-4"
               >
-                <Field label={t("fields.phone")} htmlFor="identifier">
-                  <PhoneInput id="identifier" value={identifier} onChange={setIdentifier} />
+                <Field label={t("fields.email")} htmlFor="identifier">
+                  <div dir="ltr" className="relative">
+                    <Mail className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="identifier"
+                      type="email"
+                      dir="ltr"
+                      autoComplete="email"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      placeholder={t("fields.emailPlaceholder")}
+                      className="ps-9"
+                    />
+                  </div>
                 </Field>
                 <Field label={t("fields.password")} htmlFor="password">
-                  <div className="relative">
+                  <div dir="ltr" className="relative">
                     <Lock className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="password"
@@ -217,7 +229,7 @@ export function AuthForm() {
                 </Field>
                 {totpRequired && (
                   <Field label={t("fields.totp")} htmlFor="login-totp">
-                    <div className="relative">
+                    <div dir="ltr" className="relative">
                       <KeyRound className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="login-totp"
@@ -247,8 +259,20 @@ export function AuthForm() {
               >
                 {!otpSent ? (
                   <form onSubmit={onRequestOtp} className="space-y-4">
-                    <Field label={t("fields.phone")} htmlFor="otp-identifier">
-                      <PhoneInput id="otp-identifier" value={identifier} onChange={setIdentifier} />
+                    <Field label={t("fields.email")} htmlFor="otp-identifier">
+                      <div dir="ltr" className="relative">
+                        <Mail className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          id="otp-identifier"
+                          type="email"
+                          dir="ltr"
+                          autoComplete="email"
+                          value={identifier}
+                          onChange={(e) => setIdentifier(e.target.value)}
+                          placeholder={t("fields.emailPlaceholder")}
+                          className="ps-9"
+                        />
+                      </div>
                     </Field>
                     <Button type="submit" className="w-full" loading={loading}>
                       {t("otp.request")}
@@ -260,7 +284,7 @@ export function AuthForm() {
                       {t("otp.hint", { identifier })}
                     </p>
                     <Field label={t("fields.code")} htmlFor="otp-code">
-                      <div className="relative">
+                      <div dir="ltr" className="relative">
                         <KeyRound className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                           id="otp-code"

@@ -260,7 +260,7 @@
     },
     "access": {
       "title": "خوش آمدید",
-      "subtitle": "با شمارهٔ موبایل خود وارد شوید یا حساب بسازید.",
+      "subtitle": "با ایمیل خود وارد شوید یا حساب بسازید.",
       "submit": "ادامه",
       "hint": "کاربر جدید هستید؟ با اولین ورود، حساب شما به‌صورت خودکار ساخته می‌شود."
     },
@@ -269,16 +269,16 @@
     "fields": {
       "name": "نام و نام خانوادگی",
       "namePlaceholder": "نام شما",
-      "identifier": "ایمیل یا شمارهٔ موبایل",
-      "identifierPlaceholder": "you@example.com یا +۹۸۹۱۲…",
-      "phone": "شمارهٔ موبایل",
-      "phonePlaceholder": "+۹۸ ۹۱۲ …",
+      "identifier": "ایمیل",
+      "identifierPlaceholder": "you@example.com",
       "password": "رمز عبور",
       "passwordPlaceholder": "••••••••",
       "code": "کد تأیید",
       "codePlaceholder": "کد ۶ رقمی",
       "totp": "کد احراز هویت",
-      "totpPlaceholder": "کد ۶ رقمی"
+      "totpPlaceholder": "کد ۶ رقمی",
+      "email": "ایمیل",
+      "emailPlaceholder": "you@example.com"
     },
     "totpRequired": "کد ۶ رقمی اپ احراز هویت خود را وارد کنید.",
     "otp": {
@@ -286,17 +286,17 @@
       "verify": "تأیید کد",
       "sent": "کد تأیید ارسال شد.",
       "resend": "ارسال دوباره",
-      "changeIdentifier": "تغییر ایمیل/شماره",
+      "changeIdentifier": "تغییر ایمیل",
       "hint": "کد به {identifier} ارسال شد."
     },
     "errors": {
       "generic": "عملیات ناموفق بود. دوباره تلاش کنید.",
       "invalidCredentials": "نام کاربری یا رمز عبور نادرست است.",
       "required": "این فیلد الزامی است.",
-      "invalidIdentifier": "ایمیل یا شمارهٔ موبایل معتبر وارد کنید.",
+      "invalidIdentifier": "ایمیل معتبر وارد کنید.",
       "invalidTotp": "کد احراز هویت نامعتبر است.",
       "signupDisabled": "ثبت‌نام در حال حاضر غیرفعال است. با مدیر سامانه تماس بگیرید.",
-      "invalidPhone": "شمارهٔ موبایل معتبر وارد کنید، مثلاً ۹۱۲۳۴۵۶۷۸۹."
+      "invalidEmail": "ایمیل معتبر وارد کنید."
     }
   },
   "dashboard": {
@@ -642,7 +642,6 @@
       "firstName": "نام",
       "lastName": "نام خانوادگی",
       "email": "ایمیل",
-      "phone": "تلفن",
       "save": "ذخیرهٔ تغییرات",
       "saved": "پروفایل به‌روزرسانی شد.",
       "passwordTitle": "تغییر گذرواژه",
@@ -663,8 +662,7 @@
       "totpEnable": "فعال‌سازی",
       "totpDisable": "غیرفعال‌سازی",
       "totpDisablePrompt": "برای غیرفعال‌سازی، یک کد فعلی یا گذرواژهٔ خود را وارد کنید.",
-      "cancel": "انصراف",
-      "invalidPhone": "شمارهٔ موبایل معتبر وارد کنید، مثلاً ۹۱۲۳۴۵۶۷۸۹."
+      "cancel": "انصراف"
     },
     "aiFixes": {
       "title": "رفع‌های هوش مصنوعی",

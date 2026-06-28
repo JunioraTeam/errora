@@ -2,7 +2,7 @@
 Seed a deterministic dataset for the Playwright e2e suite.
 
 Idempotent: running it twice won't duplicate the account or pile up issues. It
-creates one known user (phone + password), a project, a handful of issues with
+creates one known user (email + password), a project, a handful of issues with
 events spread across the last 30 days / 24 hours (so the trend charts render),
 plus a couple of transactions and logs. Credentials are intentionally fixed so
 the frontend specs can log in without scraping anything.
@@ -18,7 +18,6 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.accounts.models import User
-from apps.accounts.phone import normalize_phone
 from apps.ingest.normalize import normalize_event
 from apps.issues.models import Issue
 from apps.issues.services import store_event
@@ -27,10 +26,6 @@ from apps.organizations.models import Project
 from apps.organizations.services import create_project
 from apps.performance.services import store_transaction
 
-# The UI submits the national number; the auth layer stores/looks it up in E.164.
-# Seed the canonical form so login matches this account (not auto-registers a new one).
-PHONE_NATIONAL = "9123456789"
-PHONE = normalize_phone(PHONE_NATIONAL)  # "+989123456789"
 PASSWORD = "Password123!"
 EMAIL = "e2e@errora.dev"
 PROJECT_NAME = "E2E Project"
@@ -112,10 +107,9 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         user, created = User.objects.get_or_create(
-            email=EMAIL, defaults={"phone": PHONE, "phone_verified": True}
+            email=EMAIL, defaults={"email_verified": True}
         )
-        user.phone = PHONE
-        user.phone_verified = True
+        user.email_verified = True
         user.is_active = True
         user.set_password(PASSWORD)
         user.save()
@@ -190,7 +184,7 @@ class Command(BaseCommand):
 
     def _report(self, project: Project) -> None:
         key = project.keys.first()
-        self.stdout.write(f"  user phone : {PHONE}")
+        self.stdout.write(f"  user email : {EMAIL}")
         self.stdout.write(f"  password   : {PASSWORD}")
         self.stdout.write(f"  project    : {project.name} ({project.id})")
         if key:

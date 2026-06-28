@@ -260,7 +260,7 @@
     },
     "access": {
       "title": "Welcome",
-      "subtitle": "Sign in or create your account with your phone number.",
+      "subtitle": "Sign in or create your account with your email address.",
       "submit": "Continue",
       "hint": "New here? An account is created automatically on your first sign-in."
     },
@@ -269,16 +269,16 @@
     "fields": {
       "name": "Full name",
       "namePlaceholder": "Your name",
-      "identifier": "Email or phone number",
-      "identifierPlaceholder": "you@example.com or +98912…",
-      "phone": "Phone number",
-      "phonePlaceholder": "+98 912 …",
+      "identifier": "Email",
+      "identifierPlaceholder": "you@example.com",
       "password": "Password",
       "passwordPlaceholder": "••••••••",
       "code": "Verification code",
       "codePlaceholder": "6-digit code",
       "totp": "Authentication code",
-      "totpPlaceholder": "6-digit code"
+      "totpPlaceholder": "6-digit code",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com"
     },
     "totpRequired": "Enter the 6-digit code from your authenticator app.",
     "otp": {
@@ -286,17 +286,17 @@
       "verify": "Verify code",
       "sent": "Verification code sent.",
       "resend": "Resend",
-      "changeIdentifier": "Change email/phone",
+      "changeIdentifier": "Change email",
       "hint": "A code was sent to {identifier}."
     },
     "errors": {
       "generic": "Something went wrong. Please try again.",
       "invalidCredentials": "Incorrect username or password.",
       "required": "This field is required.",
-      "invalidIdentifier": "Enter a valid email or phone number.",
+      "invalidIdentifier": "Enter a valid email address.",
       "invalidTotp": "Invalid authentication code.",
       "signupDisabled": "Signup is currently disabled. Please contact your administrator.",
-      "invalidPhone": "Enter a valid mobile number, e.g. 9123456789."
+      "invalidEmail": "Enter a valid email address."
     }
   },
   "dashboard": {
@@ -642,7 +642,6 @@
       "firstName": "First name",
       "lastName": "Last name",
       "email": "Email",
-      "phone": "Phone",
       "save": "Save changes",
       "saved": "Profile updated.",
       "passwordTitle": "Change password",
@@ -663,8 +662,7 @@
       "totpEnable": "Enable",
       "totpDisable": "Disable",
       "totpDisablePrompt": "Enter a current code or your password to disable.",
-      "cancel": "Cancel",
-      "invalidPhone": "Enter a valid mobile number, e.g. 9123456789."
+      "cancel": "Cancel"
     },
     "aiFixes": {
       "title": "AI fixes",

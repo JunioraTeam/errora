@@ -9,13 +9,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import {
-  Field,
-  Input,
-  isValidIranMobile,
-  PhoneInput,
-  toNationalMobile,
-} from "@/components/ui/Input";
+import { Field, Input } from "@/components/ui/Input";
 import { ApiError, api, fieldErrors } from "@/lib/api";
 
 export default function ProfilePage() {
@@ -60,14 +54,12 @@ function PersonalInfoCard() {
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [phone, setPhone] = React.useState("");
 
   React.useEffect(() => {
     if (!user) return;
     setFirstName(user.first_name ?? "");
     setLastName(user.last_name ?? "");
     setEmail(user.email ?? "");
-    setPhone(toNationalMobile(user.phone));
   }, [user]);
 
   const save = useMutation({
@@ -76,7 +68,6 @@ function PersonalInfoCard() {
         first_name: firstName,
         last_name: lastName,
         email: email || null,
-        phone: phone || null,
       }),
     onSuccess: async () => {
       setDone(true);
@@ -106,10 +97,6 @@ function PersonalInfoCard() {
           setError(null);
           setFieldErr({});
           setDone(false);
-          if (phone && !isValidIranMobile(phone)) {
-            setFieldErr({ phone: t("invalidPhone") });
-            return;
-          }
           save.mutate();
         }}
       >
@@ -132,14 +119,6 @@ function PersonalInfoCard() {
               dir="ltr"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            />
-          </Field>
-          <Field label={t("phone")} htmlFor="phone" error={fieldErr.phone}>
-            <PhoneInput
-              id="phone"
-              value={phone}
-              onChange={setPhone}
-              invalid={!!phone && !isValidIranMobile(phone)}
             />
           </Field>
         </div>

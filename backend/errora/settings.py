@@ -194,7 +194,7 @@ OTP_ENABLED = env.bool("OTP_ENABLED", default=False)
 SIGNUP_ENABLED = env.bool("SIGNUP_ENABLED", default=True)
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = [
-    "apps.accounts.backends.PhoneOrEmailBackend",
+    "apps.accounts.backends.EmailBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 AUTH_PASSWORD_VALIDATORS = [

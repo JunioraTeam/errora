@@ -5,31 +5,18 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 
 from .models import OTPCode
-from .phone import normalize_phone
 
 User = get_user_model()
 
-INVALID_IDENTIFIER = "Enter a valid email or Iranian mobile number (9XXXXXXXXX, e.g. 9123456789)."
+INVALID_IDENTIFIER = "Enter a valid email address."
 
 
-def normalize_identifier(identifier: str) -> tuple[str, str]:
-    """Classify + canonicalize a raw identifier → (channel, normalized value).
-
-    Phones are normalized to E.164 (``+98XXXXXXXXXX``); emails are lowercased.
-    Raises a validation error for anything else.
-    """
-    identifier = (identifier or "").strip()
-    if "@" in identifier:
-        return OTPCode.Channel.EMAIL, identifier.lower()
-    phone = normalize_phone(identifier)
-    if phone:
-        return OTPCode.Channel.SMS, phone
-    raise serializers.ValidationError(INVALID_IDENTIFIER)
-
-
-def classify_identifier(identifier: str) -> str:
-    """Return the channel ('email'/'sms') for a raw identifier (back-compat)."""
-    return normalize_identifier(identifier)[0]
+def normalize_email(identifier: str) -> str:
+    """Canonicalize a raw email → lowercased value. Raises on anything invalid."""
+    identifier = (identifier or "").strip().lower()
+    if "@" not in identifier:
+        raise serializers.ValidationError(INVALID_IDENTIFIER)
+    return identifier
 
 
 class UserSerializer(ModelSerializer):
@@ -41,13 +28,11 @@ class UserSerializer(ModelSerializer):
         fields = [
             "id",
             "email",
-            "phone",
             "name",
             "first_name",
             "last_name",
             "display_name",
             "email_verified",
-            "phone_verified",
             "totp_enabled",
             "has_password",
             "date_joined",
@@ -63,23 +48,13 @@ class ProfileUpdateSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "name", "email", "phone"]
+        fields = ["first_name", "last_name", "name", "email"]
         extra_kwargs = {f: {"required": False} for f in fields}
 
     def validate_email(self, value):
         if value and User.objects.exclude(pk=self.instance.pk).filter(email=value).exists():
             raise serializers.ValidationError("This email is already in use.")
         return value
-
-    def validate_phone(self, value):
-        if not value:
-            return value
-        canonical = normalize_phone(value)
-        if not canonical:
-            raise serializers.ValidationError(INVALID_IDENTIFIER)
-        if User.objects.exclude(pk=self.instance.pk).filter(phone=canonical).exists():
-            raise serializers.ValidationError("This phone number is already in use.")
-        return canonical
 
 
 class ChangePasswordSerializer(Serializer):
@@ -105,17 +80,14 @@ class RegisterSerializer(Serializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
     def validate(self, attrs):
-        attrs["channel"], attrs["identifier"] = normalize_identifier(attrs["identifier"])
+        attrs["identifier"] = normalize_email(attrs["identifier"])
         return attrs
 
     def create(self, validated):
-        channel = validated["channel"]
-        ident = validated["identifier"]
-        kwargs = {"password": validated["password"]}
-        kwargs["email" if channel == OTPCode.Channel.EMAIL else "phone"] = ident
-        if User.objects.filter(email=ident).exists() or User.objects.filter(phone=ident).exists():
-            raise serializers.ValidationError("An account with this identifier already exists.")
-        return User.objects.create_user(**kwargs)
+        email = validated["identifier"]
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("An account with this email already exists.")
+        return User.objects.create_user(email=email, password=validated["password"])
 
 
 class AccessSerializer(Serializer):
@@ -135,9 +107,8 @@ class AccessSerializer(Serializer):
 
         from .totp import verify as verify_totp
 
-        channel, ident = normalize_identifier(attrs["identifier"])
-        lookup = {"email": ident} if channel == OTPCode.Channel.EMAIL else {"phone": ident}
-        exists = User.objects.filter(**lookup).exists()
+        ident = normalize_email(attrs["identifier"])
+        exists = User.objects.filter(email=ident).exists()
 
         if exists:
             user = authenticate(identifier=ident, password=attrs["password"])
@@ -155,7 +126,7 @@ class AccessSerializer(Serializer):
 
         if not settings.SIGNUP_ENABLED:
             raise serializers.ValidationError({"signup_disabled": True})
-        attrs["user"] = User.objects.create_user(**{**lookup, "password": attrs["password"]})
+        attrs["user"] = User.objects.create_user(email=ident, password=attrs["password"])
         attrs["created"] = True
         return attrs
 
@@ -168,7 +139,7 @@ class PasswordLoginSerializer(Serializer):
     def validate(self, attrs):
         from .totp import verify as verify_totp
 
-        _channel, ident = normalize_identifier(attrs["identifier"])
+        ident = normalize_email(attrs["identifier"])
         user = authenticate(identifier=ident, password=attrs["password"])
         if user is None:
             raise serializers.ValidationError("Invalid credentials.")
@@ -187,7 +158,8 @@ class OTPRequestSerializer(Serializer):
     identifier = serializers.CharField()
 
     def validate(self, attrs):
-        attrs["channel"], attrs["identifier"] = normalize_identifier(attrs["identifier"])
+        attrs["identifier"] = normalize_email(attrs["identifier"])
+        attrs["channel"] = OTPCode.Channel.EMAIL
         return attrs
 
 
@@ -196,5 +168,5 @@ class OTPVerifySerializer(Serializer):
     code = serializers.CharField()
 
     def validate(self, attrs):
-        _channel, attrs["identifier"] = normalize_identifier(attrs["identifier"])
+        attrs["identifier"] = normalize_email(attrs["identifier"])
         return attrs

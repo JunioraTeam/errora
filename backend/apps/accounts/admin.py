@@ -7,15 +7,15 @@ from .models import OTPCode, User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     ordering = ("-date_joined",)
-    list_display = ("id", "email", "phone", "name", "is_staff", "date_joined")
-    search_fields = ("email", "phone", "name")
+    list_display = ("id", "email", "name", "is_staff", "date_joined")
+    search_fields = ("email", "name")
     fieldsets = (
-        (None, {"fields": ("email", "phone", "password")}),
-        ("Profile", {"fields": ("name", "email_verified", "phone_verified")}),
+        (None, {"fields": ("email", "password")}),
+        ("Profile", {"fields": ("name", "email_verified")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups")}),
     )
     add_fieldsets = (
-        (None, {"classes": ("wide",), "fields": ("email", "phone", "password1", "password2")}),
+        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
     )
 
 

@@ -247,7 +247,6 @@ export const api = {
       last_name?: string;
       name?: string;
       email?: string | null;
-      phone?: string | null;
     }) {
       return request<User>("/auth/me", { method: "PATCH", body });
     },

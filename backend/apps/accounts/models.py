@@ -13,19 +13,17 @@ from .managers import UserManager
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
-    Custom user keyed by UUID. Either phone or email may serve as the login
-    identifier; at least one is required (enforced in the manager/serializer).
+    Custom user keyed by UUID. Email is the login identifier (required, enforced
+    in the manager/serializer).
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True, null=True, blank=True)
-    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     name = models.CharField(max_length=150, blank=True)
     first_name = models.CharField(max_length=75, blank=True)
     last_name = models.CharField(max_length=75, blank=True)
 
     email_verified = models.BooleanField(default=False)
-    phone_verified = models.BooleanField(default=False)
 
     # Optional TOTP two-factor auth. The secret is encrypted at rest and only
     # enforced at password login once the user verifies and enables it.
@@ -47,11 +45,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         indexes = [
             models.Index(fields=["email"]),
-            models.Index(fields=["phone"]),
         ]
 
     def __str__(self) -> str:
-        return self.email or self.phone or str(self.id)
+        return self.email or str(self.id)
 
     @property
     def full_name(self) -> str:
@@ -59,14 +56,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def display_name(self) -> str:
-        return self.full_name or self.name or self.email or self.phone or "user"
+        return self.full_name or self.name or self.email or "user"
 
 
 class OTPCode(models.Model):
-    """Short-lived one-time codes for phone/email login & verification."""
+    """Short-lived one-time codes for email login & verification."""
 
     class Channel(models.TextChoices):
-        SMS = "sms", "SMS"
         EMAIL = "email", "Email"
 
     class Purpose(models.TextChoices):
@@ -74,7 +70,7 @@ class OTPCode(models.Model):
         VERIFY = "verify", "Verify"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    identifier = models.CharField(max_length=190, db_index=True)  # phone or email
+    identifier = models.CharField(max_length=190, db_index=True)  # email
     channel = models.CharField(max_length=10, choices=Channel.choices)
     purpose = models.CharField(max_length=10, choices=Purpose.choices, default=Purpose.LOGIN)
     code_hash = models.CharField(max_length=128)

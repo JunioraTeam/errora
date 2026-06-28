@@ -59,7 +59,7 @@ class PasswordLoginView(APIView):
 
 
 class AccessView(APIView):
-    """Merged login-or-register endpoint (single phone + password form)."""
+    """Merged login-or-register endpoint (single email + password form)."""
 
     permission_classes = [AllowAny]
     throttle_classes = [ScopedRateThrottle]
@@ -104,15 +104,12 @@ class OTPVerifyView(APIView):
         ident = ser.validated_data["identifier"]
         if not await sync_to_async(verify_otp)(ident, ser.validated_data["code"]):
             return Response({"detail": "Invalid or expired code."}, status=400)
-        is_email = "@" in ident
-        field = "email" if is_email else "phone"
-        verified_field = "email_verified" if is_email else "phone_verified"
         user, _ = await User.objects.aget_or_create(
-            **{field: ident}, defaults={verified_field: True}
+            email=ident, defaults={"email_verified": True}
         )
-        if not getattr(user, verified_field):
-            setattr(user, verified_field, True)
-            await user.asave(update_fields=[verified_field])
+        if not user.email_verified:
+            user.email_verified = True
+            await user.asave(update_fields=["email_verified"])
         return Response(
             {"user": await UserSerializer(user).adata, "tokens": issue_token_pair(user)}
         )
@@ -198,7 +195,7 @@ class TOTPSetupView(APIView):
         user.totp_secret = secret
         user.totp_enabled = False
         await user.asave(update_fields=["totp_secret", "totp_enabled"])
-        label = user.email or user.phone or str(user.id)
+        label = user.email or str(user.id)
         return Response(
             {"secret": secret, "otpauth_uri": totp_lib.provisioning_uri(secret, label=label)}
         )

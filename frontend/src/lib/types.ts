@@ -12,9 +12,7 @@ export type User = {
   last_name?: string;
   display_name?: string;
   email?: string | null;
-  phone?: string | null;
   email_verified?: boolean;
-  phone_verified?: boolean;
   totp_enabled?: boolean;
   has_password?: boolean;
   avatar_url?: string | null;

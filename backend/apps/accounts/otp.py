@@ -11,7 +11,6 @@ from django.core.mail import send_mail
 from django.utils import timezone
 
 from .models import OTPCode
-from .sms import get_sms_provider
 
 
 def _hash(code: str) -> str:
@@ -27,7 +26,9 @@ def _generate_code() -> str:
     return str(secrets.randbelow(upper)).zfill(settings.OTP_LENGTH)
 
 
-def issue_otp(identifier: str, channel: str, purpose: str = OTPCode.Purpose.LOGIN) -> OTPCode:
+def issue_otp(
+    identifier: str, channel: str = OTPCode.Channel.EMAIL, purpose: str = OTPCode.Purpose.LOGIN
+) -> OTPCode:
     code = _generate_code()
     otp = OTPCode.objects.create(
         identifier=identifier,
@@ -36,15 +37,12 @@ def issue_otp(identifier: str, channel: str, purpose: str = OTPCode.Purpose.LOGI
         code_hash=_hash(code),
         expires_at=timezone.now() + timezone.timedelta(seconds=settings.OTP_TTL_SECONDS),
     )
-    if channel == OTPCode.Channel.SMS:
-        get_sms_provider().send_otp(identifier, code)
-    else:
-        send_mail(
-            subject="Errora — code",
-            message=f"Your verification code: {code}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[identifier],
-        )
+    send_mail(
+        subject="Errora — code",
+        message=f"Your verification code: {code}",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[identifier],
+    )
     return otp
 
 

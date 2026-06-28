@@ -13,13 +13,13 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Link, usePathname } from "@/i18n/routing";
-import { cn, localizeDigits } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { OrgSwitcher } from "./OrgSwitcher";
 
 const NAV = [
@@ -43,7 +43,6 @@ export function Sidebar({
   onToggleCollapse?: () => void;
 }) {
   const t = useTranslations("dashboard.nav");
-  const locale = useLocale();
   const pathname = usePathname();
   const { user, signOut } = useAuth();
 
@@ -131,7 +130,7 @@ export function Sidebar({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{user?.display_name ?? user?.name}</p>
                 <p className="truncate text-xs text-muted-foreground" dir="ltr">
-                  {user?.email ?? (user?.phone ? localizeDigits(user.phone, locale) : null)}
+                  {user?.email}
                 </p>
               </div>
             )}

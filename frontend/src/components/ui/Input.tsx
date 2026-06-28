@@ -25,66 +25,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// --- Phone (Iranian mobile) ----------------------------------------------- //
+// --- Email ----------------------------------------------------------------- //
 
-/** Valid Iranian mobile national number: 9 followed by 9 digits. */
-export function isValidIranMobile(national: string): boolean {
-  return /^9\d{9}$/.test(national);
-}
-
-/** Strip a stored E.164 value (``+989123456789``) down to the national form. */
-export function toNationalMobile(stored: string | null | undefined): string {
-  const digits = (stored ?? "").replace(/\D/g, "");
-  if (digits.startsWith("98") && digits.length === 12) return digits.slice(2);
-  if (digits.startsWith("0") && digits.length === 11) return digits.slice(1);
-  return digits.slice(0, 10);
-}
-
-/**
- * Iranian mobile input: a fixed ``+98`` prefix with the national number typed
- * after it (``9123456789``). Holds only digits (max 10); the parent gets the
- * national string and can validate with {@link isValidIranMobile}.
- */
-export function PhoneInput({
-  id,
-  value,
-  onChange,
-  invalid,
-  className,
-}: {
-  id?: string;
-  value: string;
-  onChange: (national: string) => void;
-  invalid?: boolean;
-  className?: string;
-}) {
-  return (
-    <div
-      dir="ltr"
-      className={cn(
-        "flex h-10 w-full items-center overflow-hidden rounded-[var(--radius-sm)] border border-border bg-input",
-        "transition-colors focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-ring",
-        invalid && "border-danger",
-        className
-      )}
-    >
-      <span className="select-none border-e border-border px-3 text-sm text-muted-foreground">
-        +98
-      </span>
-      <input
-        id={id}
-        type="tel"
-        inputMode="numeric"
-        autoComplete="tel-national"
-        dir="ltr"
-        value={value}
-        placeholder="9123456789"
-        maxLength={10}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
-        className="h-full flex-1 bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-      />
-    </div>
-  );
+/** Minimal email shape check (server is the source of truth). */
+export function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {

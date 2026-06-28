@@ -2,46 +2,27 @@ import pytest
 
 from apps.accounts.models import OTPCode, User
 from apps.accounts.otp import issue_otp, verify_otp
-from apps.accounts.phone import normalize_phone
-
-
-@pytest.mark.parametrize(
-    "raw,expected",
-    [
-        ("9123456789", "+989123456789"),
-        ("09123456789", "+989123456789"),
-        ("+989123456789", "+989123456789"),
-        ("0098 912 345 6789", "+989123456789"),
-        ("+98 912 345 6789", "+989123456789"),
-        ("8123456789", None),  # must start with 9
-        ("912345678", None),  # too short
-        ("91234567890", None),  # too long
-        ("not-a-phone", None),
-    ],
-)
-def test_normalize_phone(raw, expected):
-    assert normalize_phone(raw) == expected
 
 
 @pytest.mark.django_db
-def test_access_rejects_invalid_phone(api):
-    resp = api.post("/api/v1/auth/access", {"identifier": "8123456789", "password": "password123"})
+def test_access_rejects_invalid_email(api):
+    resp = api.post("/api/v1/auth/access", {"identifier": "not-an-email", "password": "password123"})
     assert resp.status_code == 400
-    assert not User.objects.filter(phone__isnull=False).exists()
+    assert not User.objects.exists()
 
 
 @pytest.mark.django_db
-def test_access_canonicalizes_phone_for_login(api):
-    # Register with the national form; the stored phone is canonical E.164.
+def test_access_canonicalizes_email_for_login(api):
+    # Register with a mixed-case email; the stored email is lowercased.
     created = api.post(
-        "/api/v1/auth/access", {"identifier": "9120000001", "password": "password123"}
+        "/api/v1/auth/access", {"identifier": "Carol@Errora.dev", "password": "password123"}
     )
     assert created.status_code == 201
-    assert User.objects.get().phone == "+989120000001"
+    assert User.objects.get().email == "carol@errora.dev"
 
-    # Log in with a different surface form of the same number → same account.
+    # Log in with a different surface form of the same email → same account.
     again = api.post(
-        "/api/v1/auth/access", {"identifier": "09120000001", "password": "password123"}
+        "/api/v1/auth/access", {"identifier": "CAROL@errora.dev", "password": "password123"}
     )
     assert again.status_code == 200
     assert User.objects.count() == 1
@@ -75,25 +56,25 @@ def test_register_blocked_when_signup_disabled(api, settings):
 
 @pytest.mark.django_db
 def test_access_registers_new_then_logs_in_existing(api):
-    # First call: unknown phone → creates the account (201).
+    # First call: unknown email → creates the account (201).
     first = api.post(
-        "/api/v1/auth/access", {"identifier": "+989120001122", "password": "password123"}
+        "/api/v1/auth/access", {"identifier": "dave@errora.dev", "password": "password123"}
     )
     assert first.status_code == 201
     assert first.data["tokens"]["access"]
-    user = User.objects.get(phone="+989120001122")
+    user = User.objects.get(email="dave@errora.dev")
     assert user.organizations.first().name == "Default organization"
 
     # Second call: same creds → logs in (200), no duplicate account.
     second = api.post(
-        "/api/v1/auth/access", {"identifier": "+989120001122", "password": "password123"}
+        "/api/v1/auth/access", {"identifier": "dave@errora.dev", "password": "password123"}
     )
     assert second.status_code == 200
-    assert User.objects.filter(phone="+989120001122").count() == 1
+    assert User.objects.filter(email="dave@errora.dev").count() == 1
 
     # Wrong password on an existing account → rejected.
     bad = api.post(
-        "/api/v1/auth/access", {"identifier": "+989120001122", "password": "wrongpass1"}
+        "/api/v1/auth/access", {"identifier": "dave@errora.dev", "password": "wrongpass1"}
     )
     assert bad.status_code == 400
 
@@ -102,11 +83,11 @@ def test_access_registers_new_then_logs_in_existing(api):
 def test_access_rejects_unknown_when_signup_disabled(api, settings):
     settings.SIGNUP_ENABLED = False
     resp = api.post(
-        "/api/v1/auth/access", {"identifier": "+989120003344", "password": "password123"}
+        "/api/v1/auth/access", {"identifier": "eve@errora.dev", "password": "password123"}
     )
     assert resp.status_code == 400
     assert "signup_disabled" in resp.data
-    assert not User.objects.filter(phone="+989120003344").exists()
+    assert not User.objects.filter(email="eve@errora.dev").exists()
 
 
 @pytest.mark.django_db
@@ -115,7 +96,7 @@ def test_auth_rate_limited(api, monkeypatch):
     from rest_framework.throttling import ScopedRateThrottle
 
     monkeypatch.setitem(ScopedRateThrottle.THROTTLE_RATES, "auth", "3/min")
-    payload = {"identifier": "+989120009999", "password": "password123"}
+    payload = {"identifier": "frank@errora.dev", "password": "password123"}
     codes = [api.post("/api/v1/auth/access", payload).status_code for _ in range(5)]
     assert 429 in codes  # throttle kicks in within the window
 
@@ -136,18 +117,16 @@ def test_password_login_rejects_bad_credentials(api, user):
 
 
 @pytest.mark.django_db
-def test_otp_round_trip_phone(settings):
-    settings.SMS_PROVIDER = "console"
-    issue_otp("+989121234567", OTPCode.Channel.SMS)
+def test_otp_round_trip_email():
+    issue_otp("grace@errora.dev", OTPCode.Channel.EMAIL)
     otp = OTPCode.objects.latest("created_at")
     # Re-derive the plaintext is impossible; verify against a wrong then right code.
-    assert verify_otp("+989121234567", "000000") is False or otp.attempts >= 1
+    assert verify_otp("grace@errora.dev", "000000") is False or otp.attempts >= 1
 
 
 @pytest.mark.django_db
-def test_otp_verify_creates_account(api, settings):
-    settings.SMS_PROVIDER = "console"
-    api.post("/api/v1/auth/otp/request", {"identifier": "+989121110000"})
+def test_otp_verify_creates_account(api):
+    api.post("/api/v1/auth/otp/request", {"identifier": "heidi@errora.dev"})
     otp = OTPCode.objects.latest("created_at")
     # Force a known code by re-issuing through the service with a patched generator.
     from apps.accounts import otp as otp_mod
@@ -155,17 +134,16 @@ def test_otp_verify_creates_account(api, settings):
     code = "123456"
     otp.code_hash = otp_mod._hash(code)
     otp.save()
-    resp = api.post("/api/v1/auth/otp/verify", {"identifier": "+989121110000", "code": code})
+    resp = api.post("/api/v1/auth/otp/verify", {"identifier": "heidi@errora.dev", "code": code})
     assert resp.status_code == 200
-    assert User.objects.filter(phone="+989121110000", phone_verified=True).exists()
+    assert User.objects.filter(email="heidi@errora.dev", email_verified=True).exists()
 
 
 @pytest.mark.django_db
 def test_dev_otp_code_is_all_ones(settings):
     settings.OTP_DEBUG_CODE = True
-    settings.SMS_PROVIDER = "console"
-    issue_otp("+989120000000", OTPCode.Channel.SMS)
-    assert verify_otp("+989120000000", "1" * settings.OTP_LENGTH) is True
+    issue_otp("ivan@errora.dev", OTPCode.Channel.EMAIL)
+    assert verify_otp("ivan@errora.dev", "1" * settings.OTP_LENGTH) is True
 
 
 @pytest.mark.django_db
