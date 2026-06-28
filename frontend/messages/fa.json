@@ -744,7 +744,16 @@
         },
         "invitePlaceholder": "name@example.com",
         "inviteSent": "دعوت‌نامه ارسال شد.",
-        "send": "ارسال دعوت"
+        "send": "ارسال دعوت",
+        "status": "وضعیت",
+        "pendingTitle": "دعوت‌نامه‌های در انتظار",
+        "pendingEmpty": "دعوت‌نامه در انتظاری وجود ندارد.",
+        "resend": "ارسال مجدد",
+        "statuses": {
+          "pending": "در انتظار",
+          "accepted": "پذیرفته‌شده",
+          "expired": "منقضی‌شده"
+        }
       },
       "integrations": {
         "gitlab": "گیت‌لب",

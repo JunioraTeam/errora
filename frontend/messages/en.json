@@ -744,7 +744,16 @@
         },
         "invitePlaceholder": "name@example.com",
         "inviteSent": "Invitation sent.",
-        "send": "Send invite"
+        "send": "Send invite",
+        "status": "Status",
+        "pendingTitle": "Pending invitations",
+        "pendingEmpty": "No pending invitations.",
+        "resend": "Resend",
+        "statuses": {
+          "pending": "Pending",
+          "accepted": "Accepted",
+          "expired": "Expired"
+        }
       },
       "integrations": {
         "gitlab": "GitLab",

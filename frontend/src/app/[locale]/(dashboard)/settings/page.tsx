@@ -40,6 +40,7 @@ import type {
   ApiToken,
   ChannelType,
   Integration,
+  Invite,
   Membership,
   NotificationChannel,
   NotificationLog,
@@ -460,6 +461,7 @@ function McpTab() {
 function MembersTab() {
   const t = useTranslations("dashboard.settings.members");
   const tr = useTranslations("dashboard.settings.members.roles");
+  const tsts = useTranslations("dashboard.settings.members.statuses");
   const { currentOrg } = useOrg();
   const orgId = currentOrg?.id;
   const qc = useQueryClient();
@@ -473,10 +475,23 @@ function MembersTab() {
   });
   const members: Membership[] = data ?? [];
 
+  const { data: invitesData } = useQuery({
+    queryKey: ["invites", orgId],
+    queryFn: () => api.orgs.invites(orgId as string),
+    enabled: !!orgId,
+  });
+  const invites: Invite[] = invitesData ?? [];
+
   const updateRole = useMutation({
     mutationFn: (v: { id: string; role: OrgRole }) =>
       api.orgs.updateMember(orgId as string, v.id, v.role),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["members", orgId] }),
+    onError: handle,
+  });
+
+  const resend = useMutation({
+    mutationFn: (inv: Invite) => api.orgs.invite(orgId as string, { email: inv.email, role: inv.role }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["invites", orgId] }),
     onError: handle,
   });
 
@@ -548,8 +563,61 @@ function MembersTab() {
         open={inviteOpen}
         onClose={() => setInviteOpen(false)}
         orgId={orgId}
+        onSent={() => qc.invalidateQueries({ queryKey: ["invites", orgId] })}
         onError={handle}
       />
+
+      <div className="border-t border-border px-5 py-4">
+        <h3 className="text-sm font-semibold text-muted-foreground">{t("pendingTitle")}</h3>
+      </div>
+      {invites.length === 0 ? (
+        <p className="px-5 pb-5 text-sm text-muted-foreground">{t("pendingEmpty")}</p>
+      ) : (
+        <Table>
+          <THead>
+            <TR className="hover:bg-transparent">
+              <TH>{t("email")}</TH>
+              <TH>{t("role")}</TH>
+              <TH>{t("status")}</TH>
+              <TH />
+            </TR>
+          </THead>
+          <TBody>
+            {invites.map((inv) => (
+              <TR key={inv.id}>
+                <TD dir="ltr">{inv.email}</TD>
+                <TD>{tr(inv.role)}</TD>
+                <TD>
+                  <Badge
+                    variant={
+                      inv.status === "accepted"
+                        ? "success"
+                        : inv.status === "expired"
+                          ? "muted"
+                          : "default"
+                    }
+                  >
+                    {tsts(inv.status)}
+                  </Badge>
+                </TD>
+                <TD className="text-end">
+                  {inv.status !== "accepted" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      loading={resend.isPending && resend.variables?.id === inv.id}
+                      onClick={() => resend.mutate(inv)}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      {t("resend")}
+                    </Button>
+                  )}
+                </TD>
+              </TR>
+            ))}
+          </TBody>
+        </Table>
+      )}
     </Card>
   );
 }
@@ -558,11 +626,13 @@ function InviteDialog({
   open,
   onClose,
   orgId,
+  onSent,
   onError,
 }: {
   open: boolean;
   onClose: () => void;
   orgId: string;
+  onSent: () => void;
   onError: (e: unknown) => void;
 }) {
   const t = useTranslations("dashboard.settings.members");
@@ -577,6 +647,7 @@ function InviteDialog({
     onSuccess: () => {
       setDone(true);
       setEmail("");
+      onSent();
     },
     onError,
   });

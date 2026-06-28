@@ -313,6 +313,9 @@ export const api = {
         body: { role },
       });
     },
+    invites(orgId: string) {
+      return request<Invite[]>(`/organizations/${orgId}/invites`);
+    },
     invite(orgId: string, body: { email: string; role: OrgRole }) {
       return request<Invite>(`/organizations/${orgId}/invite`, {
         method: "POST",

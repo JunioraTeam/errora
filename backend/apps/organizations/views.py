@@ -20,6 +20,7 @@ from .models import (
     OrganizationInvite,
     Project,
     ProjectKey,
+    _gen_key,
 )
 from .roles import ORG_MANAGE, PROJECT_CREATE, PROJECT_MANAGE, Role
 from .serializers import (
@@ -76,17 +77,32 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         await membership.asave(update_fields=["role"])
         return Response(await MembershipSerializer(membership).adata)
 
+    @action(detail=True, methods=["get"])
+    async def invites(self, request, pk=None):
+        org = await self.aget_object()
+        await self._arequire(org, ORG_MANAGE)
+        invites = org.invites.order_by("-created_at")
+        return Response(await InviteSerializer(invites, many=True).adata)
+
     @action(detail=True, methods=["post"])
     async def invite(self, request, pk=None):
         org = await self.aget_object()
         await self._arequire(org, ORG_MANAGE)
         ser = InviteSerializer(data=request.data)
         await sync_to_async(ser.is_valid)(raise_exception=True)
-        invite = await OrganizationInvite.objects.acreate(
+        # Upsert on (organization, email): re-inviting the same address resends
+        # the invite instead of 500-ing on the unique constraint. A resend mints
+        # a fresh token and resets status/expiry so only the newest link works.
+        invite, _ = await OrganizationInvite.objects.aupdate_or_create(
             organization=org,
-            invited_by=request.user,
-            expires_at=timezone.now() + timezone.timedelta(days=7),
-            **ser.validated_data,
+            email=ser.validated_data["email"],
+            defaults={
+                "role": ser.validated_data.get("role", Role.MEMBER),
+                "invited_by": request.user,
+                "status": OrganizationInvite.Status.PENDING,
+                "token": _gen_key(),
+                "expires_at": timezone.now() + timezone.timedelta(days=7),
+            },
         )
         # Deliver the invite email off-request (best-effort). ``.delay`` is a
         # blocking broker publish (and runs the task inline under eager mode), so
@@ -111,9 +127,7 @@ class InvitePreviewView(APIView):
         )
         if invite is None:
             return Response({"detail": "Invite not found."}, status=404)
-        valid = (
-            not invite.is_expired and invite.status == OrganizationInvite.Status.PENDING
-        )
+        valid = not invite.is_expired and invite.status == OrganizationInvite.Status.PENDING
         return Response(
             {
                 "email": invite.email,
