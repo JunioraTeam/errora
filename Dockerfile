@@ -31,7 +31,7 @@
 # ===========================================================================
 # Stage 1: frontend deps — node_modules, cached on lockfile changes only.
 # ===========================================================================
-FROM node:20-alpine AS frontend-deps
+FROM node:22-alpine AS frontend-deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY frontend/package.json frontend/pnpm-lock.yaml* frontend/pnpm-workspace.yaml* ./
@@ -41,7 +41,7 @@ RUN corepack enable && pnpm install --frozen-lockfile
 # ===========================================================================
 # Stage 2: frontend builder — `next build` -> .next/standalone bundle.
 # ===========================================================================
-FROM node:20-alpine AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -88,7 +88,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # App source, then collect static at build time (immutable, cacheable layer).
 # Throwaway secrets satisfy settings import; real values come from runtime env.
 COPY backend/ ./
-RUN SECRET_KEY="build-time-dummy-not-used-at-runtime" \
+RUN DEBUG=1 \
+    SECRET_KEY="build-time-dummy-not-used-at-runtime" \
     DATABASE_URL="postgres://build:build@localhost:5432/build" \
     python manage.py collectstatic --noinput
 
@@ -119,7 +120,7 @@ RUN apt-get update \
     && rm -f /etc/nginx/sites-enabled/default
 
 # glibc node binary to run the Next.js standalone server on this debian image.
-COPY --from=node:20-bookworm-slim /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
 
 # Unprivileged users for the app processes (nginx runs as www-data, built in).
 RUN groupadd --system --gid 1000 errora \

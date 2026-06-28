@@ -1,42 +1,71 @@
 # =============================================================================
-# Errora — local development / single-host stack.
+# Errora — single-host stack built from the ONE merged image (root Dockerfile).
 #
-#   docker compose up --build
+#   docker compose up --build           # http://localhost (port 80)
 #
-# Services:
-#   db        Postgres 16          (persistent volume + healthcheck)
-#   redis     Redis 7              (cache + Celery broker/result backend)
-#   backend   Django (gunicorn)    (runs migrations, then serves :8000)
-#   worker    Celery worker        (queues: ingest, ai, notifications, default)
-#   beat      Celery beat          (periodic task scheduler)
-#   frontend  Next.js (standalone) (:3000)
+# The `app` container runs the whole application behind nginx (gunicorn web,
+# Next.js, celery worker, celery beat — all supervised). Only the datastores
+# run alongside it.
 #
-# Configuration is read from environment variables. Copy your secrets into a
-# `.env` file in this directory (same dir as this compose file); every service
-# below references it via `env_file`. The inline `environment:` blocks provide
-# wiring/defaults and override only what each service strictly needs.
+# Config comes from environment. Copy secrets into a `.env` file next to this
+# compose file; the inline `environment:` block wires service DNS + defaults.
+#
+# NEXT_PUBLIC_API_URL is inlined into the client bundle at BUILD time. Leave it
+# EMPTY for this single-origin setup — the client falls back to the page's own
+# origin at runtime, so the same image works on any domain. Set it only when the
+# API is served from a different origin than the frontend.
 # =============================================================================
 
-x-backend-env: &backend-env
-  # --- Core ---
-  DEBUG: "${DEBUG:-0}"
-  SECRET_KEY: "${SECRET_KEY:-dev-insecure-change-me}"
-  ALLOWED_HOSTS: "${ALLOWED_HOSTS:-*}"
-  SITE_URL: "${SITE_URL:-http://localhost:8000}"
-  FRONTEND_URL: "${FRONTEND_URL:-http://localhost:3000}"
-  CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost:3000}"
-  LANGUAGE_CODE: "${LANGUAGE_CODE:-fa}"
-  # --- Datastores (point at the compose service DNS names) ---
-  DATABASE_URL: "${DATABASE_URL:-postgres://errora:errora@db:5432/errora}"
-  REDIS_URL: "${REDIS_URL:-redis://redis:6379/0}"
-  CELERY_BROKER_URL: "${CELERY_BROKER_URL:-redis://redis:6379/0}"
-  # --- Secrets / integrations (override in .env) ---
-  SECRETS_ENCRYPTION_KEY: "${SECRETS_ENCRYPTION_KEY:-}"
-  JWT_SECRET: "${JWT_SECRET:-}"
-  KAVENEGAR_API_KEY: "${KAVENEGAR_API_KEY:-}"
-  AI_DEFAULT_PROVIDER: "${AI_DEFAULT_PROVIDER:-claude}"
-
 services:
+  # ---------------------------------------------------------------------------
+  # Application — merged image: nginx + gunicorn + next.js + celery (supervisor).
+  # Entrypoint runs DB migrations, then hands off to supervisord.
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-}"
+    image: errora/app:${ERRORA_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # --- Core ---
+      DEBUG: "${DEBUG:-0}"
+      SECRET_KEY: "${SECRET_KEY:-dev-insecure-change-me}"
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-*}"
+      SITE_URL: "${SITE_URL:-http://localhost}"
+      FRONTEND_URL: "${FRONTEND_URL:-http://localhost}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost}"
+      LANGUAGE_CODE: "${LANGUAGE_CODE:-fa}"
+      # --- Datastores (compose service DNS names) ---
+      DATABASE_URL: "${DATABASE_URL:-postgres://errora:errora@db:5432/errora}"
+      REDIS_URL: "${REDIS_URL:-redis://redis:6379/0}"
+      CELERY_BROKER_URL: "${CELERY_BROKER_URL:-redis://redis:6379/0}"
+      # --- Process tuning (consumed by supervisord program defs) ---
+      GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
+      CELERY_CONCURRENCY: "${CELERY_CONCURRENCY:-4}"
+      # --- Secrets / integrations (override in .env) ---
+      SECRETS_ENCRYPTION_KEY: "${SECRETS_ENCRYPTION_KEY:-}"
+      JWT_SECRET: "${JWT_SECRET:-}"
+      KAVENEGAR_API_KEY: "${KAVENEGAR_API_KEY:-}"
+      AI_DEFAULT_PROVIDER: "${AI_DEFAULT_PROVIDER:-claude}"
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
   # ---------------------------------------------------------------------------
   # Postgres
   # ---------------------------------------------------------------------------
@@ -48,9 +77,10 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-errora}"
       POSTGRES_DB: "${POSTGRES_DB:-errora}"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # pg18+ images store data in a major-version subdir; mount the parent.
+      - pgdata:/var/lib/postgresql
     ports:
-      # Bound to loopback only (local psql access, not the host's public ifaces).
+      # Loopback only (local psql access, not the host's public ifaces).
       - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-errora} -d ${POSTGRES_DB:-errora}"]
@@ -77,106 +107,6 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
-
-  # ---------------------------------------------------------------------------
-  # Backend — Django web (gunicorn). Runs DB migrations before serving.
-  # ---------------------------------------------------------------------------
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: errora/backend:${ERRORA_TAG:-latest}
-    restart: unless-stopped
-    # Migrate, then hand off to gunicorn (exec keeps PID 1 = gunicorn).
-    command: >
-      sh -c "python manage.py migrate --noinput &&
-             exec gunicorn errora.wsgi:application --bind 0.0.0.0:8000 --workers 4"
-    env_file:
-      - .env
-    environment:
-      <<: *backend-env
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # ---------------------------------------------------------------------------
-  # Celery worker — consumes all queues. Reuses the backend image.
-  # ---------------------------------------------------------------------------
-  worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: errora/backend:${ERRORA_TAG:-latest}
-    restart: unless-stopped
-    command: ["celery", "-A", "errora", "worker", "-Q", "ingest,ai,notifications,default", "-l", "info"]
-    env_file:
-      - .env
-    environment:
-      <<: *backend-env
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      backend:
-        # Ensure migrations have run before workers start processing tasks.
-        condition: service_started
-    healthcheck:
-      test: ["CMD", "celery", "-A", "errora", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-
-  # ---------------------------------------------------------------------------
-  # Celery beat — periodic task scheduler. Reuses the backend image.
-  # ---------------------------------------------------------------------------
-  beat:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: errora/backend:${ERRORA_TAG:-latest}
-    restart: unless-stopped
-    command: ["celery", "-A", "errora", "beat", "-l", "info"]
-    env_file:
-      - .env
-    environment:
-      <<: *backend-env
-    depends_on:
-      redis:
-        condition: service_healthy
-      backend:
-        condition: service_started
-
-  # ---------------------------------------------------------------------------
-  # Frontend — Next.js standalone server.
-  # ---------------------------------------------------------------------------
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        # Baked into the client bundle at build time.
-        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://localhost:8000}"
-    image: errora/frontend:${ERRORA_TAG:-latest}
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://localhost:8000}"
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
 
 volumes:
   pgdata:
