@@ -262,7 +262,9 @@ function ProjectTrendBars({ stats }: { stats?: { errors: number[]; transactions:
                   />
                   <span
                     className="w-1/2 rounded-sm bg-accent/60"
-                    style={{ height: `${tx === 0 ? 0 : Math.max(4, Math.round((tx / max) * 100))}%` }}
+                    style={{
+                      height: `${tx === 0 ? 0 : Math.max(4, Math.round((tx / max) * 100))}%`,
+                    }}
                   />
                 </div>
               );
@@ -283,7 +285,12 @@ function ProjectTrendBars({ stats }: { stats?: { errors: number[]; transactions:
         typeof document !== "undefined" &&
         createPortal(
           <div
-            style={{ position: "fixed", left: tip.x, top: tip.y - 8, transform: "translate(-50%, -100%)" }}
+            style={{
+              position: "fixed",
+              left: tip.x,
+              top: tip.y - 8,
+              transform: "translate(-50%, -100%)",
+            }}
             className="pointer-events-none z-[100] whitespace-nowrap rounded-[var(--radius-sm)] border border-border bg-card px-2 py-1 text-[11px] shadow-md"
           >
             <div className="mb-0.5 font-medium">{tip.date}</div>
@@ -324,6 +331,7 @@ function DsnBox({ dsn }: { dsn: string }) {
         {dsn || "—"}
       </code>
       <button
+        type="button"
         onClick={copy}
         title={tc("copy")}
         className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"

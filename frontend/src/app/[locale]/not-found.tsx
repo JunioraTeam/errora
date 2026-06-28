@@ -1,9 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
 import { LogoMark } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
+import { Link } from "@/i18n/routing";
 
 export default function NotFound() {
   const t = useTranslations("notFound");

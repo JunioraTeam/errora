@@ -33,8 +33,8 @@ import type {
   Project,
   ProjectStats,
   Repository,
-  TrackerIssue,
   Tokens,
+  TrackerIssue,
   TransactionDetail,
   TransactionGroupDetail,
   TransactionListResponse,
@@ -115,7 +115,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
   if (auth) {
     const tokens = tokenStore.get();
-    if (tokens) headers["Authorization"] = `Bearer ${tokens.access}`;
+    if (tokens) headers.Authorization = `Bearer ${tokens.access}`;
   }
 
   const res = await fetch(`${API_PREFIX}${path}`, {
@@ -636,17 +636,13 @@ export const api = {
       return request<IssueTrends>(`/projects/${projectId}/issues/trends${qs(params)}`);
     },
     series(projectId: string, id: string, period: "24h" | "30d") {
-      return request<IssueSeries>(
-        `/projects/${projectId}/issues/${id}/series${qs({ period })}`
-      );
+      return request<IssueSeries>(`/projects/${projectId}/issues/${id}/series${qs({ period })}`);
     },
     repositories(projectId: string, id: string) {
       return request<Repository[]>(`/projects/${projectId}/issues/${id}/repositories`);
     },
     externalIssues(projectId: string, id: string) {
-      return request<IssueExternalIssue[]>(
-        `/projects/${projectId}/issues/${id}/external-issues`
-      );
+      return request<IssueExternalIssue[]>(`/projects/${projectId}/issues/${id}/external-issues`);
     },
     searchExternalIssues(projectId: string, id: string, repository: string, q: string) {
       return request<{ results: TrackerIssue[] }>(

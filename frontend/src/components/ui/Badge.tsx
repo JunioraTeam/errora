@@ -1,14 +1,8 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import type * as React from "react";
 import type { IssueLevel, IssueStatus } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-type BadgeVariant =
-  | "default"
-  | "accent"
-  | "success"
-  | "danger"
-  | "muted"
-  | "outline";
+type BadgeVariant = "default" | "accent" | "success" | "danger" | "muted" | "outline";
 
 const variants: Record<BadgeVariant, string> = {
   default: "bg-foreground/10 text-foreground",
@@ -29,7 +23,7 @@ export function Badge({
       className={cn(
         "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
         variants[variant],
-        className,
+        className
       )}
       {...props}
     />
@@ -58,13 +52,10 @@ export function LevelBadge({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
         levelColors[level] ?? levelColors.error,
-        className,
+        className
       )}
     >
-      <span
-        aria-hidden
-        className="h-1.5 w-1.5 rounded-full bg-current"
-      />
+      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
       {label}
     </span>
   );
@@ -77,12 +68,6 @@ const statusVariant: Record<IssueStatus, BadgeVariant> = {
   archived: "muted",
 };
 
-export function StatusBadge({
-  status,
-  label,
-}: {
-  status: IssueStatus;
-  label: string;
-}) {
+export function StatusBadge({ status, label }: { status: IssueStatus; label: string }) {
   return <Badge variant={statusVariant[status]}>{label}</Badge>;
 }

@@ -65,9 +65,7 @@ export function IssueTrendChart({ projectId, issueId }: { projectId: string; iss
             >
               <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-[var(--radius-sm)] border border-border bg-card px-2 py-1 text-[11px] shadow-md group-hover/bar:flex">
                 <span className="font-medium">{formatNumber(b.count, locale)}</span>
-                <span className="ms-1.5 text-muted-foreground">
-                  {formatDateTime(b.ts, locale)}
-                </span>
+                <span className="ms-1.5 text-muted-foreground">{formatDateTime(b.ts, locale)}</span>
               </span>
             </div>
           ))}

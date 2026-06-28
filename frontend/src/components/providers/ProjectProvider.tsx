@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import * as React from "react";
 import { api, unwrapList } from "@/lib/api";
-import { useOrg } from "./OrgProvider";
 import type { Project } from "@/lib/types";
+import { useOrg } from "./OrgProvider";
 
 const STORAGE_KEY = "errora.project";
 
@@ -20,9 +20,7 @@ const ProjectContext = React.createContext<ProjectContextValue | null>(null);
 
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
   const { currentOrg } = useOrg();
-  const [currentProjectId, setCurrentProjectIdState] = React.useState<
-    string | null
-  >(null);
+  const [currentProjectId, setCurrentProjectIdState] = React.useState<string | null>(null);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["projects", currentOrg?.id],
@@ -37,12 +35,8 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
       setCurrentProjectIdState(null);
       return;
     }
-    const stored =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem(STORAGE_KEY)
-        : null;
-    const valid =
-      stored && projects.some((p) => p.id === stored) ? stored : null;
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    const valid = stored && projects.some((p) => p.id === stored) ? stored : null;
     setCurrentProjectIdState(valid ?? projects[0].id);
   }, [projects]);
 
@@ -53,8 +47,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const currentProject =
-    projects.find((p) => p.id === currentProjectId) ?? projects[0] ?? null;
+  const currentProject = projects.find((p) => p.id === currentProjectId) ?? projects[0] ?? null;
 
   const value = React.useMemo<ProjectContextValue>(
     () => ({
@@ -64,17 +57,14 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       refetch,
     }),
-    [projects, currentProject, setCurrentProjectId, isLoading, refetch],
+    [projects, currentProject, setCurrentProjectId, isLoading, refetch]
   );
 
-  return (
-    <ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>
-  );
+  return <ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>;
 }
 
 export function useProjects(): ProjectContextValue {
   const ctx = React.useContext(ProjectContext);
-  if (!ctx)
-    throw new Error("useProjects must be used within a ProjectProvider");
+  if (!ctx) throw new Error("useProjects must be used within a ProjectProvider");
   return ctx;
 }

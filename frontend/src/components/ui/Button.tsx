@@ -7,12 +7,9 @@ type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg" | "icon";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-accent text-accent-foreground hover:bg-accent-hover shadow-sm",
-  secondary:
-    "bg-muted text-foreground hover:bg-background-elevated border border-border",
-  outline:
-    "border border-border bg-transparent text-foreground hover:bg-muted",
+  primary: "bg-accent text-accent-foreground hover:bg-accent-hover shadow-sm",
+  secondary: "bg-muted text-foreground hover:bg-background-elevated border border-border",
+  outline: "border border-border bg-transparent text-foreground hover:bg-muted",
   ghost: "bg-transparent text-foreground hover:bg-muted",
   danger: "bg-danger text-white hover:opacity-90 shadow-sm",
 };
@@ -42,7 +39,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       type,
       ...props
     },
-    ref,
+    ref
   ) => {
     return (
       <button
@@ -58,7 +55,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           "active:scale-[0.98]",
           variants[variant],
           sizes[size],
-          className,
+          className
         )}
         {...props}
       >
@@ -71,6 +68,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  },
+  }
 );
 Button.displayName = "Button";

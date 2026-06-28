@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 
 export function PageHeader({
   title,
@@ -13,9 +13,7 @@ export function PageHeader({
     <div className="flex flex-col gap-3 border-b border-border px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
       <div>
         <h1 className="text-xl font-bold tracking-tight">{title}</h1>
-        {subtitle && (
-          <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
-        )}
+        {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>

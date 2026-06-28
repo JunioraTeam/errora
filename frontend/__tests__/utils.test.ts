@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { annualPrice, PAYG, paygCost } from "@/lib/pricing";
 import {
   cn,
-  toPersianDigits,
+  formatCompact,
   formatNumber,
   formatToman,
-  formatCompact,
   relativeTime,
+  toPersianDigits,
 } from "@/lib/utils";
-import { paygCost, annualPrice, PAYG } from "@/lib/pricing";
 
 describe("cn", () => {
   it("joins truthy classes and drops falsy ones", () => {

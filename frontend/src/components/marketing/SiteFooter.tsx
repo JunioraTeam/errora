@@ -1,9 +1,9 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
-import { Logo } from "@/components/Logo";
 import { Heart } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { Logo } from "@/components/Logo";
+import { Link } from "@/i18n/routing";
 import { BRAND } from "@/lib/brand";
 import { localizedYear } from "@/lib/datetime";
 
@@ -52,9 +52,7 @@ export function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div>
             <Logo />
-            <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-              {t("madeWith")}
-            </p>
+            <p className="mt-3 max-w-xs text-sm text-muted-foreground">{t("madeWith")}</p>
           </div>
           {columns.map((col) => (
             <div key={col.title}>
@@ -62,10 +60,7 @@ export function SiteFooter() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 {col.links.map(([label, href]) => (
                   <li key={label}>
-                    <Link
-                      href={href}
-                      className="transition-colors hover:text-foreground"
-                    >
+                    <Link href={href} className="transition-colors hover:text-foreground">
                       {label}
                     </Link>
                   </li>

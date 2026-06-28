@@ -1,10 +1,10 @@
 "use client";
 
+import { X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type DialogProps = {
@@ -16,14 +16,7 @@ type DialogProps = {
   className?: string;
 };
 
-export function Dialog({
-  open,
-  onClose,
-  title,
-  description,
-  children,
-  className,
-}: DialogProps) {
+export function Dialog({ open, onClose, title, description, children, className }: DialogProps) {
   const tc = useTranslations("common");
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
@@ -37,9 +30,7 @@ export function Dialog({
     // Move focus into the dialog, trap Tab, and restore focus on close.
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const focusables = () =>
-      panelRef.current
-        ? Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE))
-        : [];
+      panelRef.current ? Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)) : [];
     (focusables()[0] ?? panelRef.current)?.focus();
 
     const onKey = (e: KeyboardEvent) => {
@@ -95,7 +86,7 @@ export function Dialog({
             tabIndex={-1}
             className={cn(
               "relative z-10 w-full max-w-lg rounded-[var(--radius-lg)] border border-border bg-card p-6 shadow-lg focus:outline-none",
-              className,
+              className
             )}
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -110,21 +101,13 @@ export function Dialog({
             >
               <X className="h-4 w-4" />
             </button>
-            {title && (
-              <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-            )}
-            {description && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                {description}
-              </p>
-            )}
-            <div className={cn(title || description ? "mt-4" : "")}>
-              {children}
-            </div>
+            {title && <h2 className="text-lg font-semibold tracking-tight">{title}</h2>}
+            {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+            <div className={cn(title || description ? "mt-4" : "")}>{children}</div>
           </motion.div>
         </div>
       )}
     </AnimatePresence>,
-    document.body,
+    document.body
   );
 }

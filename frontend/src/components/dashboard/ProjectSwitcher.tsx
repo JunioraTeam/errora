@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Select } from "@/components/ui/Input";
 import { useProjects } from "@/components/providers/ProjectProvider";
+import { Select } from "@/components/ui/Input";
 
 export function ProjectSwitcher() {
   const t = useTranslations("dashboard.issues");

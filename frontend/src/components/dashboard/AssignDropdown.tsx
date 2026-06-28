@@ -187,14 +187,14 @@ export function AssignDropdown({
                     {t("assignEmpty")}
                   </p>
                 ) : (
-                  <ul
-                    className="flex-1 space-y-0.5 overflow-y-auto"
+                  <div
                     role="listbox"
+                    className="flex-1 space-y-0.5 overflow-y-auto"
                     aria-multiselectable
                     aria-label={t("assign")}
                   >
                     {filtered.map((m) => (
-                      <li key={m.id}>
+                      <div key={m.id}>
                         {/* biome-ignore lint/a11y/useKeyWithClickEvents: option uses onKeyDown for keyboard; mouse toggle is on the checkbox */}
                         <div
                           role="option"
@@ -225,9 +225,9 @@ export function AssignDropdown({
                             )}
                           </span>
                         </div>
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 )}
               </motion.div>
             )}

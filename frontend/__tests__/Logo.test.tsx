@@ -1,12 +1,12 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { Logo, LogoMark } from "@/components/Logo";
 
 describe("Logo", () => {
   it("renders the wordmark with the brand name", () => {
     const { container } = render(<Logo />);
     const spanWithText = Array.from(container.querySelectorAll("span")).find(
-      (el) => el.textContent === "Errora" && el.querySelector("svg") === null,
+      (el) => el.textContent === "Errora" && el.querySelector("svg") === null
     );
     expect(spanWithText).toBeDefined();
   });
@@ -22,7 +22,7 @@ describe("Logo", () => {
     const { container } = render(<Logo showText={false} />);
     // The text wordmark is a <span>; the SVG <title> is not rendered as a span.
     const spanWithText = Array.from(container.querySelectorAll("span")).find(
-      (el) => el.textContent === "Errora" && el.querySelector("svg") === null,
+      (el) => el.textContent === "Errora" && el.querySelector("svg") === null
     );
     expect(spanWithText).toBeUndefined();
   });

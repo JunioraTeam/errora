@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       tokenStore.set(tokens);
       await loadMe();
     },
-    [loadMe],
+    [loadMe]
   );
 
   const signOut = React.useCallback(() => {
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut,
       refreshUser: loadMe,
     }),
-    [user, isLoading, setSession, setTokens, signOut, loadMe],
+    [user, isLoading, setSession, setTokens, signOut, loadMe]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,16 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Building2, Check, ChevronsUpDown, Plus } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "next-intl";
+import * as React from "react";
 import { useOrg } from "@/components/providers/OrgProvider";
-import { api } from "@/lib/api";
-import { cn } from "@/lib/utils";
-import { Dialog } from "@/components/ui/Dialog";
-import { Input, Field } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
+import { Field, Input } from "@/components/ui/Input";
+import { api } from "@/lib/api";
 
 export function OrgSwitcher() {
   const t = useTranslations("dashboard.org");
@@ -52,6 +51,7 @@ export function OrgSwitcher() {
   return (
     <div className="relative" ref={ref}>
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center gap-2.5 rounded-[var(--radius-sm)] border border-border bg-card px-3 py-2 text-start transition-colors hover:bg-muted"
       >
@@ -77,6 +77,7 @@ export function OrgSwitcher() {
           >
             {orgs.map((org) => (
               <button
+                type="button"
                 key={org.id}
                 onClick={() => {
                   setCurrentOrgId(org.id);
@@ -90,6 +91,7 @@ export function OrgSwitcher() {
             ))}
             <div className="my-1 border-t border-border" />
             <button
+              type="button"
               onClick={() => {
                 setOpen(false);
                 setCreateOpen(true);
@@ -103,11 +105,7 @@ export function OrgSwitcher() {
         )}
       </AnimatePresence>
 
-      <Dialog
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        title={t("createTitle")}
-      >
+      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} title={t("createTitle")}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -116,19 +114,10 @@ export function OrgSwitcher() {
           className="space-y-4"
         >
           <Field label={t("name")} htmlFor="org-name">
-            <Input
-              id="org-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoFocus
-            />
+            <Input id="org-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
           </Field>
           <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setCreateOpen(false)}
-            >
+            <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
               {tc("cancel")}
             </Button>
             <Button type="submit" loading={createMutation.isPending}>

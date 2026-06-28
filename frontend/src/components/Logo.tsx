@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { BRAND } from "@/lib/brand";
 
 /**
@@ -30,14 +30,7 @@ export function LogoMark({
         fill="none"
       />
       {/* Exclamation stem */}
-      <rect
-        x="14.4"
-        y="11"
-        width="3.2"
-        height="7.4"
-        rx="1.6"
-        fill="currentColor"
-      />
+      <rect x="14.4" y="11" width="3.2" height="7.4" rx="1.6" fill="currentColor" />
       {/* Glitch-offset accent dot */}
       <circle cx="16" cy="22.4" r="1.9" fill="var(--accent, #da7756)" />
     </svg>

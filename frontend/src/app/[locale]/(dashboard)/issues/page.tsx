@@ -409,7 +409,9 @@ function TrendToggle({
           onClick={() => onChange(opt)}
           className={cn(
             "px-1.5 py-0.5 text-[10px] font-medium tabular-nums transition-colors",
-            value === opt ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
+            value === opt
+              ? "bg-accent text-accent-foreground"
+              : "text-muted-foreground hover:bg-muted"
           )}
         >
           {opt}

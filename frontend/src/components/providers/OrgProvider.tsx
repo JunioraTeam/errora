@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import * as React from "react";
 import { api, unwrapList } from "@/lib/api";
 import type { Organization } from "@/lib/types";
 
@@ -18,9 +18,7 @@ type OrgContextValue = {
 const OrgContext = React.createContext<OrgContextValue | null>(null);
 
 export function OrgProvider({ children }: { children: React.ReactNode }) {
-  const [currentOrgId, setCurrentOrgIdState] = React.useState<string | null>(
-    null,
-  );
+  const [currentOrgId, setCurrentOrgIdState] = React.useState<string | null>(null);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["organizations"],
@@ -32,10 +30,7 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
   // Restore persisted selection / default to the first org.
   React.useEffect(() => {
     if (orgs.length === 0) return;
-    const stored =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem(STORAGE_KEY)
-        : null;
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
     const valid = stored && orgs.some((o) => o.id === stored) ? stored : null;
     setCurrentOrgIdState(valid ?? orgs[0].id);
   }, [orgs]);
@@ -47,8 +42,7 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const currentOrg =
-    orgs.find((o) => o.id === currentOrgId) ?? orgs[0] ?? null;
+  const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0] ?? null;
 
   const value = React.useMemo<OrgContextValue>(
     () => ({
@@ -58,7 +52,7 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       refetch,
     }),
-    [orgs, currentOrg, setCurrentOrgId, isLoading, refetch],
+    [orgs, currentOrg, setCurrentOrgId, isLoading, refetch]
   );
 
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;

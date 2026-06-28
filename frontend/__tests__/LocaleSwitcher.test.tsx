@@ -1,14 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen, fireEvent } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "./test-utils";
 
 const replace = vi.fn();
 
 // Mock the i18n navigation helpers used by LocaleSwitcher.
 vi.mock("@/i18n/routing", async () => {
-  const actual = await vi.importActual<typeof import("@/i18n/routing")>(
-    "@/i18n/routing",
-  );
+  const actual = await vi.importActual<typeof import("@/i18n/routing")>("@/i18n/routing");
   return {
     ...actual,
     usePathname: () => "/dashboard",

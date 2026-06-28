@@ -1,9 +1,9 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**", "__tests__/**", "*.ts", "*.mjs", "*.json"]
+    "includes": ["src/**", "__tests__/**", "*.ts", "*.mjs", "*.json", "!**/*.svg", "!**/*.css"]
   },
   "formatter": {
     "enabled": true,
@@ -14,9 +14,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "suspicious": { "noArrayIndexKey": "off" },
-      "a11y": { "useKeyWithClickEvents": "off" }
+      "a11y": { "useKeyWithClickEvents": "off" },
+      "style": { "noNonNullAssertion": "off" }
     }
   },
   "javascript": {

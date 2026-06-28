@@ -57,8 +57,7 @@ export default function InvitePage() {
   // 3. Once preview + auth state are known, decide the next step.
   React.useEffect(() => {
     if (!token || !preview || authLoading) return;
-    const emailMatches =
-      !!user?.email && user.email.toLowerCase() === preview.email.toLowerCase();
+    const emailMatches = !!user?.email && user.email.toLowerCase() === preview.email.toLowerCase();
 
     if (!isAuthenticated) {
       setPhase(preview.valid ? "ready" : "invalid");

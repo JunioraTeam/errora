@@ -24,8 +24,8 @@ import { useOrg } from "@/components/providers/OrgProvider";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { CodeBlock } from "@/components/ui/CodeBlock";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { CodeBlock } from "@/components/ui/CodeBlock";
 import { Dialog } from "@/components/ui/Dialog";
 import { Field, Input, Select } from "@/components/ui/Input";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/Table";
@@ -490,7 +490,8 @@ function MembersTab() {
   });
 
   const resend = useMutation({
-    mutationFn: (inv: Invite) => api.orgs.invite(orgId as string, { email: inv.email, role: inv.role }),
+    mutationFn: (inv: Invite) =>
+      api.orgs.invite(orgId as string, { email: inv.email, role: inv.role }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["invites", orgId] }),
     onError: handle,
   });

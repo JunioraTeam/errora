@@ -86,7 +86,14 @@ function FrameAction({
     "inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" title={title} aria-label={title} className={cls}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        title={title}
+        aria-label={title}
+        className={cls}
+      >
         {children}
       </a>
     );
@@ -231,10 +238,7 @@ function ContextLines({ frame, lang }: { frame: StackFrame; lang: Lang }) {
       {lines.map((line, i) => (
         <div
           key={i}
-          className={cn(
-            "flex gap-3 px-4 py-0.5",
-            line.current && "bg-[var(--level-error)]/10"
-          )}
+          className={cn("flex gap-3 px-4 py-0.5", line.current && "bg-[var(--level-error)]/10")}
         >
           <span className="w-10 shrink-0 select-none text-end text-muted-foreground">
             {line.no ?? ""}
@@ -243,10 +247,7 @@ function ContextLines({ frame, lang }: { frame: StackFrame; lang: Lang }) {
             code={line.text || " "}
             lang={lang}
             wrap
-            className={cn(
-              "min-w-0 flex-1 text-xs",
-              line.current && "font-medium"
-            )}
+            className={cn("min-w-0 flex-1 text-xs", line.current && "font-medium")}
           />
         </div>
       ))}

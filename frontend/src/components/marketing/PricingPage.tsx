@@ -1,17 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { AnimatePresence, motion } from "motion/react";
 import { Check, Sparkles } from "lucide-react";
-import { Link } from "@/i18n/routing";
-import { Button } from "@/components/ui/Button";
+import { AnimatePresence, motion } from "motion/react";
+import { useLocale, useTranslations } from "next-intl";
+import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
-import { SiteNav } from "./SiteNav";
-import { SiteFooter } from "./SiteFooter";
-import { PaygSlider } from "./PaygSlider";
-import { PLANS, annualPrice, type Plan } from "@/lib/pricing";
+import { Button } from "@/components/ui/Button";
+import { Link } from "@/i18n/routing";
+import { annualPrice, PLANS, type Plan } from "@/lib/pricing";
 import { cn, formatToman } from "@/lib/utils";
+import { PaygSlider } from "./PaygSlider";
+import { SiteFooter } from "./SiteFooter";
+import { SiteNav } from "./SiteNav";
 
 type Cycle = "monthly" | "annual";
 
@@ -68,26 +68,21 @@ export function PricingPage() {
   );
 }
 
-function CycleToggle({
-  cycle,
-  onChange,
-}: {
-  cycle: Cycle;
-  onChange: (c: Cycle) => void;
-}) {
+function CycleToggle({ cycle, onChange }: { cycle: Cycle; onChange: (c: Cycle) => void }) {
   const t = useTranslations("pricing");
   return (
     <div className="mt-8 flex items-center justify-center gap-3">
       <div className="inline-flex items-center gap-1 rounded-full border border-border bg-muted p-1">
         {(["monthly", "annual"] as const).map((c) => (
           <button
+            type="button"
             key={c}
             onClick={() => onChange(c)}
             className={cn(
               "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
               cycle === c
                 ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             {t(c)}
@@ -127,9 +122,7 @@ function PlanCard({ plan, cycle }: { plan: Plan; cycle: Cycle }) {
       transition={{ duration: 0.45 }}
       className={cn(
         "relative flex flex-col rounded-[var(--radius-lg)] border bg-card p-6 shadow-sm",
-        plan.popular
-          ? "border-accent shadow-lg ring-1 ring-accent/30"
-          : "border-border",
+        plan.popular ? "border-accent shadow-lg ring-1 ring-accent/30" : "border-border"
       )}
     >
       {plan.popular && (
@@ -146,9 +139,7 @@ function PlanCard({ plan, cycle }: { plan: Plan; cycle: Cycle }) {
 
       <div className="mt-5 min-h-[3.5rem]">
         {isCustom ? (
-          <span className="text-2xl font-extrabold tracking-tight">
-            {t("contactSales")}
-          </span>
+          <span className="text-2xl font-extrabold tracking-tight">{t("contactSales")}</span>
         ) : (
           <div className="flex items-baseline gap-1.5">
             <span className="text-3xl font-extrabold tabular-nums tracking-tight">
@@ -163,10 +154,7 @@ function PlanCard({ plan, cycle }: { plan: Plan; cycle: Cycle }) {
 
       <div className="mt-2">
         <Link href={isCustom ? "/login" : "/register"}>
-          <Button
-            variant={plan.popular ? "primary" : "outline"}
-            className="w-full"
-          >
+          <Button variant={plan.popular ? "primary" : "outline"} className="w-full">
             {isCustom ? t("contactSales") : t("choosePlan")}
           </Button>
         </Link>
@@ -195,9 +183,7 @@ function Faq() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 pb-24 sm:px-6">
-      <h2 className="text-center text-2xl font-bold tracking-tight">
-        {t("title")}
-      </h2>
+      <h2 className="text-center text-2xl font-bold tracking-tight">{t("title")}</h2>
       <div className="mt-8 space-y-3">
         {items.map(([q, a], i) => {
           const isOpen = open === i;
@@ -216,7 +202,7 @@ function Faq() {
                 <span
                   className={cn(
                     "shrink-0 text-muted-foreground transition-transform duration-300",
-                    isOpen && "rotate-45",
+                    isOpen && "rotate-45"
                   )}
                 >
                   +

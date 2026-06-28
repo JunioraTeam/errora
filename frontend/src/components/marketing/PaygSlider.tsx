@@ -1,14 +1,14 @@
 "use client";
 
-import * as React from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { motion } from "motion/react";
 import { Gauge } from "lucide-react";
+import { motion } from "motion/react";
+import { useLocale, useTranslations } from "next-intl";
+import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Link } from "@/i18n/routing";
 import { PAYG, paygCost } from "@/lib/pricing";
 import { formatCompact, formatNumber, formatToman } from "@/lib/utils";
-import { Link } from "@/i18n/routing";
 
 export function PaygSlider() {
   const t = useTranslations("pricing.payg");
@@ -17,8 +17,7 @@ export function PaygSlider() {
   const [events, setEvents] = React.useState(PAYG.defaultEvents);
 
   const cost = paygCost(events);
-  const pct =
-    ((events - PAYG.minEvents) / (PAYG.maxEvents - PAYG.minEvents)) * 100;
+  const pct = ((events - PAYG.minEvents) / (PAYG.maxEvents - PAYG.minEvents)) * 100;
 
   return (
     <motion.div
@@ -35,16 +34,11 @@ export function PaygSlider() {
             <Gauge className="h-3.5 w-3.5" />
             {t("badge")}
           </Badge>
-          <h3 className="mt-4 text-2xl font-bold tracking-tight">
-            {t("title")}
-          </h3>
+          <h3 className="mt-4 text-2xl font-bold tracking-tight">{t("title")}</h3>
           <p className="mt-2 text-muted-foreground">{t("desc")}</p>
 
           <div className="mt-8">
-            <label
-              htmlFor="payg-range"
-              className="flex items-center justify-between text-sm"
-            >
+            <label htmlFor="payg-range" className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{t("sliderLabel")}</span>
               <span className="font-semibold tabular-nums">
                 {formatNumber(events, locale)} {t("events")}

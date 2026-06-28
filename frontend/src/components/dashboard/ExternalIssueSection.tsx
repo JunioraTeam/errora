@@ -135,7 +135,7 @@ function defaultDescription(issue: IssueDetail): string {
   const url = typeof window !== "undefined" ? window.location.href : "";
   const lines = [
     issue.culprit ? `**${issue.culprit}**` : "",
-    issue.value ? "```\n" + issue.value + "\n```" : "",
+    issue.value ? `\`\`\`\n${issue.value}\n\`\`\`` : "",
     url ? `\nReported by Errora: ${url}` : "",
   ].filter(Boolean);
   return lines.join("\n");
@@ -153,7 +153,7 @@ function CreateTab({
   onDone: () => void;
 }) {
   const t = useTranslations("dashboard.issueDetail.tracker");
-  const tc = useTranslations("common");
+  const _tc = useTranslations("common");
   const [repository, setRepository] = React.useState(repos[0]?.id ?? "");
   const [title, setTitle] = React.useState(defaultTitle(issue));
   const [description, setDescription] = React.useState(defaultDescription(issue));
@@ -172,7 +172,12 @@ function CreateTab({
       }}
       className="space-y-4"
     >
-      <RepoSelect repos={repos} value={repository} onChange={setRepository} label={t("repository")} />
+      <RepoSelect
+        repos={repos}
+        value={repository}
+        onChange={setRepository}
+        label={t("repository")}
+      />
       <Field label={t("issueTitle")} htmlFor="tracker-title">
         <Input id="tracker-title" value={title} onChange={(e) => setTitle(e.target.value)} />
       </Field>
@@ -334,7 +339,10 @@ function RepoSelect({
 function ErrorLine({ error }: { error: unknown }) {
   const t = useTranslations("dashboard.issueDetail.tracker");
   const detail =
-    error instanceof ApiError && error.body && typeof error.body === "object" && "detail" in error.body
+    error instanceof ApiError &&
+    error.body &&
+    typeof error.body === "object" &&
+    "detail" in error.body
       ? String((error.body as { detail: unknown }).detail)
       : t("error");
   return <p className="text-sm text-danger">{detail}</p>;

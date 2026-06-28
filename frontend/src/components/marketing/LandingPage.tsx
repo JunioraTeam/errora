@@ -1,30 +1,28 @@
 "use client";
 
-import * as React from "react";
-import { useTranslations } from "next-intl";
-import { motion } from "motion/react";
 import {
-  Layers,
-  Gauge,
-  Sparkles,
-  GitMerge,
-  BellRing,
-  ListTree,
   ArrowRight,
-  Check,
+  BellRing,
   Bot,
+  Check,
+  Gauge,
+  GitMerge,
+  Layers,
+  Link2,
+  ListTree,
+  Map as MapIcon,
   ScrollText,
-  Map,
   Search,
   ShieldCheck,
-  Link2,
+  Sparkles,
 } from "lucide-react";
-import { Link } from "@/i18n/routing";
+import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
+import { Badge, LevelBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { LevelBadge } from "@/components/ui/Badge";
-import { SiteNav } from "./SiteNav";
+import { Link } from "@/i18n/routing";
 import { SiteFooter } from "./SiteFooter";
+import { SiteNav } from "./SiteNav";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -79,8 +77,7 @@ function Hero() {
             transition={{ duration: 0.5 }}
             className="mt-6 text-balance text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl"
           >
-            {t("titleLine1")}{" "}
-            <span className="text-gradient">{t("titleLine2")}</span>
+            {t("titleLine1")} <span className="text-gradient">{t("titleLine2")}</span>
           </motion.h1>
 
           <motion.p
@@ -118,9 +115,24 @@ function Hero() {
 
 function HeroPreview() {
   const rows = [
-    { level: "fatal" as const, title: "TypeError", value: "Cannot read 'id' of undefined", seen: "1.2k" },
-    { level: "error" as const, title: "QueryException", value: "SQLSTATE[42S02] table not found", seen: "843" },
-    { level: "warning" as const, title: "TimeoutError", value: "Upstream request timed out", seen: "211" },
+    {
+      level: "fatal" as const,
+      title: "TypeError",
+      value: "Cannot read 'id' of undefined",
+      seen: "1.2k",
+    },
+    {
+      level: "error" as const,
+      title: "QueryException",
+      value: "SQLSTATE[42S02] table not found",
+      seen: "843",
+    },
+    {
+      level: "warning" as const,
+      title: "TimeoutError",
+      value: "Upstream request timed out",
+      seen: "211",
+    },
   ];
   const tl = useTranslations("dashboard.issues.level");
   return (
@@ -135,9 +147,7 @@ function HeroPreview() {
           <span className="h-3 w-3 rounded-full bg-[var(--level-fatal)]/70" />
           <span className="h-3 w-3 rounded-full bg-[var(--level-warning)]/70" />
           <span className="h-3 w-3 rounded-full bg-success/70" />
-          <span className="ms-3 text-xs text-muted-foreground">
-            errora — issues
-          </span>
+          <span className="ms-3 text-xs text-muted-foreground">errora — issues</span>
         </div>
         <div className="divide-y divide-border">
           {rows.map((r, i) => (
@@ -153,13 +163,9 @@ function HeroPreview() {
                   <LevelBadge level={r.level} label={tl(r.level)} />
                   <span className="truncate font-semibold">{r.title}</span>
                 </div>
-                <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
-                  {r.value}
-                </p>
+                <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{r.value}</p>
               </div>
-              <span className="shrink-0 tabular-nums text-sm text-muted-foreground">
-                {r.seen}
-              </span>
+              <span className="shrink-0 tabular-nums text-sm text-muted-foreground">{r.seen}</span>
             </motion.div>
           ))}
         </div>
@@ -180,9 +186,7 @@ function Stats() {
       <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 py-12 text-center sm:grid-cols-3 sm:px-6">
         {items.map((s) => (
           <div key={s.label}>
-            <div className="text-3xl font-extrabold tracking-tight text-accent">
-              {s.value}
-            </div>
+            <div className="text-3xl font-extrabold tracking-tight text-accent">{s.value}</div>
             <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
           </div>
         ))}
@@ -202,7 +206,7 @@ function Features() {
     { key: "stacktrace", icon: ListTree },
     { key: "logs", icon: ScrollText },
     { key: "mcp", icon: Bot },
-    { key: "sourcemaps", icon: Map },
+    { key: "sourcemaps", icon: MapIcon },
     { key: "search", icon: Search },
     { key: "issueTracking", icon: Link2 },
     { key: "retention", icon: ShieldCheck },
@@ -228,12 +232,8 @@ function Features() {
             <div className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] bg-accent-soft text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
               <Icon className="h-5 w-5" />
             </div>
-            <h3 className="mt-4 text-lg font-semibold tracking-tight">
-              {t(`${key}.title`)}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {t(`${key}.desc`)}
-            </p>
+            <h3 className="mt-4 text-lg font-semibold tracking-tight">{t(`${key}.title`)}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(`${key}.desc`)}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -257,9 +257,7 @@ function AutofixShowcase() {
             <Bot className="h-3.5 w-3.5" />
             {t("badge")}
           </Badge>
-          <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
-            {t("title")}
-          </h2>
+          <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t("title")}</h2>
           <p className="mt-4 text-lg text-muted-foreground">{t("desc")}</p>
           <ul className="mt-7 space-y-3">
             {steps.map((step, i) => (
@@ -343,12 +341,8 @@ function FinalCta() {
         className="relative overflow-hidden rounded-[var(--radius-lg)] border border-border bg-card px-6 py-16 text-center shadow-sm"
       >
         <div className="pointer-events-none absolute inset-0 glow-accent" />
-        <h2 className="relative text-3xl font-bold tracking-tight sm:text-4xl">
-          {t("title")}
-        </h2>
-        <p className="relative mx-auto mt-3 max-w-xl text-muted-foreground">
-          {t("subtitle")}
-        </p>
+        <h2 className="relative text-3xl font-bold tracking-tight sm:text-4xl">{t("title")}</h2>
+        <p className="relative mx-auto mt-3 max-w-xl text-muted-foreground">{t("subtitle")}</p>
         <div className="relative mt-8">
           <Link href="/register">
             <Button size="lg">{t("button")}</Button>
@@ -359,13 +353,7 @@ function FinalCta() {
   );
 }
 
-function SectionHeading({
-  title,
-  subtitle,
-}: {
-  title: string;
-  subtitle: string;
-}) {
+function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}

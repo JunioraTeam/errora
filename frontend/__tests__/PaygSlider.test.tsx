@@ -1,21 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
-import { screen, fireEvent } from "@testing-library/react";
-import * as React from "react";
-import { renderWithIntl } from "./test-utils";
-import { paygCost, PAYG } from "@/lib/pricing";
+import { fireEvent, screen } from "@testing-library/react";
+import type * as React from "react";
+import { describe, expect, it, vi } from "vitest";
+import { PAYG, paygCost } from "@/lib/pricing";
 import { formatToman } from "@/lib/utils";
+import { renderWithIntl } from "./test-utils";
 
 // The slider links to /register via the i18n Link; stub it to a plain anchor.
 vi.mock("@/i18n/routing", async () => {
-  const actual = await vi.importActual<typeof import("@/i18n/routing")>(
-    "@/i18n/routing",
-  );
+  const actual = await vi.importActual<typeof import("@/i18n/routing")>("@/i18n/routing");
   return {
     ...actual,
-    Link: ({
-      children,
-      ...props
-    }: React.PropsWithChildren<{ href: string }>) => (
+    Link: ({ children, ...props }: React.PropsWithChildren<{ href: string }>) => (
       <a {...props}>{children}</a>
     ),
   };

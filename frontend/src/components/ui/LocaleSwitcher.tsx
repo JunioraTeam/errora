@@ -1,10 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { useLocale, useTranslations } from "next-intl";
 import { Languages } from "lucide-react";
-import { usePathname, useRouter } from "@/i18n/routing";
-import { locales, type Locale } from "@/i18n/routing";
+import { useLocale, useTranslations } from "next-intl";
+import * as React from "react";
+import { type Locale, locales, usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 export function LocaleSwitcher({ className }: { className?: string }) {
@@ -34,7 +33,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
       data-current={locale}
       className={cn(
         "inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-sm)] border border-border bg-transparent px-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50",
-        className,
+        className
       )}
     >
       <Languages className="h-4 w-4" />

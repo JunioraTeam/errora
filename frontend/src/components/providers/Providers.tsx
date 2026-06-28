@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { ThemeProvider } from "./ThemeProvider";
-import { QueryProvider } from "./QueryProvider";
+import type * as React from "react";
 import { AuthProvider } from "./AuthProvider";
+import { QueryProvider } from "./QueryProvider";
+import { ThemeProvider } from "./ThemeProvider";
 
 /**
  * Client-side provider stack shared across the whole app.
