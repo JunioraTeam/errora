@@ -39,9 +39,6 @@ const nextConfig: NextConfig = {
   // Pin the file-tracing root to this project so a stray parent lockfile
   // (e.g. ~/yarn.lock) can't mis-root the standalone build.
   outputFileTracingRoot: import.meta.dirname,
-  experimental: {
-    optimizePackageImports: ["lucide-react"],
-  },
   async headers() {
     return [{ source: "/(.*)", headers: SECURITY_HEADERS }];
   },
