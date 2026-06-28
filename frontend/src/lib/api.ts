@@ -11,6 +11,7 @@ import type {
   ChannelType,
   Integration,
   Invite,
+  InvitePreview,
   Issue,
   IssueComment,
   IssueDetail,
@@ -316,6 +317,19 @@ export const api = {
       return request<Invite>(`/organizations/${orgId}/invite`, {
         method: "POST",
         body,
+      });
+    },
+    /** Public lookup of an invite by token (no auth) — for the accept page. */
+    previewInvite(token: string) {
+      return request<InvitePreview>(`/invites/preview/${encodeURIComponent(token)}`, {
+        auth: false,
+      });
+    },
+    /** Accept an invite as the signed-in user (email must match the invitee). */
+    acceptInvite(token: string) {
+      return request<{ detail: string; organization: string }>("/invites/accept", {
+        method: "POST",
+        body: { token },
       });
     },
   },

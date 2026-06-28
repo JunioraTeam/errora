@@ -852,5 +852,22 @@
     "title": "Page not found",
     "desc": "The page you were looking for doesn't exist.",
     "home": "Back home"
+  },
+  "invite": {
+    "loading": "Loading invitation…",
+    "joining": "Joining {org}…",
+    "joinedTitle": "You're in!",
+    "joinedBody": "You've joined {org}. Taking you to the dashboard…",
+    "invalidTitle": "Invitation not valid",
+    "invalidBody": "This invitation has expired or has already been used.",
+    "signInTitle": "Join {org}",
+    "signInBody": "You've been invited to join {org}. Sign in or create your account with {email} to accept.",
+    "signInCta": "Continue",
+    "wrongTitle": "Wrong account",
+    "wrongBody": "This invitation was sent to {email}. Sign out and use that account to accept.",
+    "switchAccount": "Sign out",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We couldn't process this invitation. Please try again.",
+    "toDashboard": "Go to dashboard"
   }
 }

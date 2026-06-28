@@ -29,6 +29,10 @@ export function AuthForm() {
 
   const [method, setMethod] = React.useState<Method>("password");
   const [identifier, setIdentifier] = React.useState("");
+  // Where to land after auth (defaults to the dashboard). An invite link sends
+  // the user here with ?next=/invite?token=… &email=… so we can bounce them back
+  // to accept the invite and pre-fill the address it was sent to.
+  const [nextUrl, setNextUrl] = React.useState("/dashboard");
   const [password, setPassword] = React.useState("");
   const [code, setCode] = React.useState("");
   const [totp, setTotp] = React.useState("");
@@ -36,6 +40,14 @@ export function AuthForm() {
   const [otpSent, setOtpSent] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    if (next?.startsWith("/")) setNextUrl(next); // only same-origin paths
+    const email = params.get("email");
+    if (email) setIdentifier(email);
+  }, []);
 
   function fail(e: unknown) {
     if (e instanceof ApiError && e.status === 401) {
@@ -66,7 +78,7 @@ export function AuthForm() {
         ...(totpRequired ? { totp } : {}),
       });
       setSession(res);
-      router.push("/dashboard");
+      router.push(nextUrl);
     } catch (e) {
       if (e instanceof ApiError && e.status === 400 && e.body && typeof e.body === "object") {
         const body = e.body as Record<string, unknown>;
@@ -124,7 +136,7 @@ export function AuthForm() {
     try {
       const res = await api.auth.verifyOtp({ identifier, code });
       setSession(res);
-      router.push("/dashboard");
+      router.push(nextUrl);
     } catch (e) {
       fail(e);
     } finally {

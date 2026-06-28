@@ -409,6 +409,16 @@ export type Invite = {
   created_at: string;
 };
 
+/** Public (pre-login) view of an invite, fetched by its token. */
+export type InvitePreview = {
+  email: string;
+  role: OrgRole;
+  organization_name: string;
+  status: "pending" | "accepted" | "expired";
+  valid: boolean;
+  expired: boolean;
+};
+
 export type IntegrationProvider = "gitlab" | "github";
 
 export type Integration = {

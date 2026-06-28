@@ -11,6 +11,8 @@ def create_default_organization(sender, instance, created, **kwargs):
     if not created:
         return
     # Imported lazily to avoid app-loading order issues.
-    from apps.organizations.services import create_organization_with_owner
+    from apps.organizations.services import accept_pending_invites, create_organization_with_owner
 
     create_organization_with_owner(owner=instance, name="Default organization")
+    # Auto-join any organization the user was invited to before signing up.
+    accept_pending_invites(instance)

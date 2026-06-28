@@ -1,7 +1,12 @@
 from adrf.routers import DefaultRouter
 from django.urls import include, path
 
-from .views import InviteAcceptView, OrganizationViewSet, ProjectViewSet
+from .views import (
+    InviteAcceptView,
+    InvitePreviewView,
+    OrganizationViewSet,
+    ProjectViewSet,
+)
 
 # adrf's router rewrites the standard CRUD action map (list/create/…) to the
 # async ``a``-prefixed handlers for async viewsets.
@@ -20,6 +25,7 @@ project_stats = ProjectViewSet.as_view({"get": "stats"})
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("invites/preview/<str:token>", InvitePreviewView.as_view(), name="invite-preview"),
     path("organizations/<uuid:org_pk>/projects/stats", project_stats, name="project-stats"),
     path("organizations/<uuid:org_pk>/projects", project_list, name="project-list"),
     path("organizations/<uuid:org_pk>/projects/<uuid:pk>", project_detail, name="project-detail"),

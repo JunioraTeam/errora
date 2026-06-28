@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from adrf import viewsets
 from adrf.generics import aget_object_or_404
+from adrf.views import APIView
 from asgiref.sync import sync_to_async
 from django.db.models import Count, Max, Q
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from apps.issues.models import IssueStatus
@@ -93,6 +95,35 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
         await sync_to_async(send_invite_email.delay)(str(invite.id))
         return Response(await InviteSerializer(invite).adata, status=status.HTTP_201_CREATED)
+
+
+class InvitePreviewView(APIView):
+    """Public lookup of an invite by token so the accept page can show who/what it
+    is for *before* the recipient signs in. Leaks only org name + invited email."""
+
+    permission_classes = [AllowAny]
+
+    async def get(self, request, token):
+        invite = (
+            await OrganizationInvite.objects.select_related("organization")
+            .filter(token=token)
+            .afirst()
+        )
+        if invite is None:
+            return Response({"detail": "Invite not found."}, status=404)
+        valid = (
+            not invite.is_expired and invite.status == OrganizationInvite.Status.PENDING
+        )
+        return Response(
+            {
+                "email": invite.email,
+                "role": invite.role,
+                "organization_name": invite.organization.name,
+                "status": invite.status,
+                "valid": valid,
+                "expired": invite.is_expired,
+            }
+        )
 
 
 class InviteAcceptView(viewsets.ViewSet):

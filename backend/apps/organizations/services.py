@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from django.db import transaction
+from django.utils import timezone
 
-from .models import Membership, Organization, Project, ProjectKey, ProjectMembership
+from .models import Membership, Organization, OrganizationInvite, Project, ProjectKey, ProjectMembership
 from .roles import Role, role_has
 
 
@@ -13,6 +14,34 @@ def create_organization_with_owner(*, owner, name: str) -> Organization:
     org = Organization.objects.create(name=name)
     Membership.objects.create(organization=org, user=owner, role=Role.OWNER)
     return org
+
+
+@transaction.atomic
+def accept_pending_invites(user) -> int:
+    """Convert every pending, unexpired invite addressed to this user's email into
+    a membership. Called on signup so an invited user who registers (instead of
+    clicking the email link) still lands in the organization automatically.
+
+    Returns the number of organizations joined.
+    """
+    if not user.email:
+        return 0
+    invites = OrganizationInvite.objects.filter(
+        email__iexact=user.email,
+        status=OrganizationInvite.Status.PENDING,
+        expires_at__gt=timezone.now(),
+    )
+    joined = 0
+    for invite in invites:
+        Membership.objects.get_or_create(
+            organization_id=invite.organization_id,
+            user=user,
+            defaults={"role": invite.role},
+        )
+        invite.status = OrganizationInvite.Status.ACCEPTED
+        invite.save(update_fields=["status"])
+        joined += 1
+    return joined
 
 
 @transaction.atomic

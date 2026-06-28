@@ -274,6 +274,87 @@ def test_invite_sends_email(auth_api, org, settings):
     assert "newbie@errora.dev" in mail.outbox[0].to
 
 
+@pytest.mark.django_db
+def test_invite_preview_public(api, org, user):
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from apps.organizations.models import OrganizationInvite
+
+    invite = OrganizationInvite.objects.create(
+        organization=org,
+        email="newbie@errora.dev",
+        invited_by=user,
+        expires_at=timezone.now() + timedelta(days=7),
+    )
+    # No auth header: the preview must be reachable by a logged-out recipient.
+    resp = api.get(f"/api/v1/invites/preview/{invite.token}")
+    assert resp.status_code == 200
+    assert resp.data["email"] == "newbie@errora.dev"
+    assert resp.data["organization_name"] == org.name
+    assert resp.data["valid"] is True
+
+
+@pytest.mark.django_db
+def test_invite_preview_unknown_token(api):
+    assert api.get("/api/v1/invites/preview/nope").status_code == 404
+
+
+@pytest.mark.django_db
+def test_signup_auto_joins_pending_invite(api, org, user):
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from apps.accounts.models import User
+    from apps.organizations.models import Membership, OrganizationInvite
+
+    OrganizationInvite.objects.create(
+        organization=org,
+        email="invited@errora.dev",
+        role="member",
+        invited_by=user,
+        expires_at=timezone.now() + timedelta(days=7),
+    )
+    # Registering with the invited email should auto-join the org (no link click).
+    resp = api.post(
+        "/api/v1/auth/register",
+        {"identifier": "invited@errora.dev", "password": "password123"},
+        format="json",
+    )
+    assert resp.status_code == 201
+    new_user = User.objects.get(email="invited@errora.dev")
+    assert Membership.objects.filter(organization=org, user=new_user, role="member").exists()
+    # The invite is consumed.
+    assert OrganizationInvite.objects.get(email="invited@errora.dev").status == "accepted"
+
+
+@pytest.mark.django_db
+def test_expired_invite_not_auto_joined(api, org, user):
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from apps.accounts.models import User
+    from apps.organizations.models import Membership, OrganizationInvite
+
+    OrganizationInvite.objects.create(
+        organization=org,
+        email="late@errora.dev",
+        invited_by=user,
+        expires_at=timezone.now() - timedelta(days=1),  # already expired
+    )
+    resp = api.post(
+        "/api/v1/auth/register",
+        {"identifier": "late@errora.dev", "password": "password123"},
+        format="json",
+    )
+    assert resp.status_code == 201
+    new_user = User.objects.get(email="late@errora.dev")
+    assert not Membership.objects.filter(organization=org, user=new_user).exists()
+
+
 # --- Webhook delivery log + replay ----------------------------------------- //
 @pytest.mark.django_db
 def test_notification_replay(auth_api, org, monkeypatch):
