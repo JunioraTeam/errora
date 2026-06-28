@@ -199,8 +199,8 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
               <LevelBadge level={issue.level} label={tl(issue.level)} />
               <StatusBadge status={issue.status} label={ts(issue.status)} />
             </div>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight">{issue.type}</h1>
-            <p className="mt-1 font-mono text-sm text-muted-foreground" dir="ltr">
+            <h1 className="mt-2 break-words text-2xl font-bold tracking-tight">{issue.type}</h1>
+            <p className="mt-1 break-words font-mono text-sm text-muted-foreground" dir="ltr">
               {issue.value}
             </p>
           </div>
