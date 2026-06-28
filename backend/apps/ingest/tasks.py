@@ -65,6 +65,8 @@ def process_transaction(self, project_id: str, raw: dict) -> str | None:
     from apps.performance.services import store_transaction
 
     data = normalize_transaction(raw)
+    # store_transaction fires the transaction_stored signal (inside its atomic
+    # block) so apps.insights projects the trace's AI/MCP spans transactionally.
     result = store_transaction(project, data)
     return result["event_id"]
 

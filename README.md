@@ -51,6 +51,12 @@ that opens merge requests for you.
 - **AI auto-fix (Seer-like)** — gather the stacktrace + relevant source from the repo, ask an
   AI provider for a patch, open a **merge request** automatically. Providers: **OpenAI-compatible**,
   **Claude**, **Cursor Agents** — swappable per org/project.
+- **LLM observability** — an AI-monitoring product (`apps.insights`) built on the tracing
+  pipeline: the official Sentry SDKs' **AI-agents** and **MCP** modules emit OpenTelemetry
+  `gen_ai.*` / `mcp.*` spans, which Errora projects into a queryable table. Two dashboards —
+  **AI Agents** (agent runs, LLM calls, duration, tokens by model with cached/not-cached split,
+  tool calls, recent runs + per-run span timeline) and **MCP Server** (traffic, by client,
+  by method/transport, most-used tools/resources/prompts).
 - **Structured logs** — a logs product (`apps.logs`) alongside errors: severity levels, typed
   attributes (tags), trace/span correlation, level facets, and full-text search.
 - **Full-text search** — issue & log search backed by the database's native FTS
@@ -232,6 +238,7 @@ App API is under `/api/v1/` (JWT `Authorization: Bearer <access>`). Highlights:
 | Issue trends | `GET .../issues/trends?period=24h\|30d`, `GET .../issues/{id}/series` |
 | Issue tracking | `GET/POST .../issues/{id}/external-issues`, `GET .../external-issues/search`, `GET .../issues/{id}/repositories` |
 | Logs | `GET /projects/{id}/logs`, `GET .../logs/{id}`, `GET .../logs/attribute-keys` |
+| AI monitoring | `GET /projects/{id}/insights/agents`, `.../insights/agents/runs`, `.../insights/agents/runs/{trace_id}`, `.../insights/mcp` |
 | Source maps | `POST /projects/{id}/releases/{release}/artifacts` (upload) |
 | Integrations | `GET/POST /organizations/{id}/integrations`, `POST .../sync` |
 | AI | `POST /projects/{id}/issues/{id}/autofix`, `GET/POST /organizations/{id}/ai-configs` |
@@ -289,6 +296,11 @@ Honest status — what is built vs. what still needs doing.
   Sentry `transaction` envelope items, groups them by (name, op), and serves throughput /
   p50–p99 latency / failure-rate plus a span-op breakdown, duration histogram and a span
   **waterfall** trace view. (Profiling — sampled call stacks — still TODO.)
+- [x] **LLM observability** (`apps.insights`) — AI-agent & MCP-server monitoring built on the
+  tracing pipeline: projects `gen_ai.*` / `mcp.*` spans out of stored traces into an indexed
+  table; serves agent-run / LLM-call / tool-call / token (cached vs not) / by-model dashboards,
+  a recent-runs list with per-run span timeline, and MCP traffic by client / method / transport
+  with most-used tools / resources / prompts.
 - [x] **Webhook deliveries** — delivery **log API** + **replay** endpoint + **exponential backoff**.
   (Signature docs page still TODO.)
 - [x] Per-event **rate limiting / spike protection** and inbound payload size caps at the edge

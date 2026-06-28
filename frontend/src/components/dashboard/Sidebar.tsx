@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  Bot,
   Bug,
   FolderKanban,
   Gauge,
@@ -27,6 +28,7 @@ const NAV = [
   { key: "projects", href: "/projects", icon: FolderKanban },
   { key: "issues", href: "/issues", icon: Bug },
   { key: "performance", href: "/performance", icon: Gauge },
+  { key: "insights", href: "/insights", icon: Bot },
   { key: "logs", href: "/logs", icon: ScrollText },
   { key: "aiFixes", href: "/ai-fixes", icon: Sparkles },
   { key: "usage", href: "/usage", icon: BarChart3 },

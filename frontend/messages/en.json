@@ -305,6 +305,7 @@
       "projects": "Projects",
       "issues": "Issues",
       "performance": "Performance",
+      "insights": "AI Monitoring",
       "logs": "Logs",
       "aiFixes": "AI fixes",
       "usage": "Usage",
@@ -837,6 +838,84 @@
           "cursor": "Cursor"
         }
       }
+    },
+    "insights": {
+      "title": "AI Monitoring",
+      "subtitle": "LLM agent runs and MCP server traffic",
+      "period": "Period",
+      "tabs": {
+        "agents": "AI Agents",
+        "mcp": "MCP Server"
+      },
+      "empty": "No AI agent activity in this period. Instrument your app with the Sentry SDK's AI agents module to see runs here.",
+      "emptyMcp": "No MCP traffic in this period.",
+      "stats": {
+        "agentRuns": "Agent runs",
+        "llmCalls": "LLM calls",
+        "toolCalls": "Tool calls",
+        "errors": "Errors",
+        "totalTokens": "Tokens used",
+        "inputTokens": "Input",
+        "outputTokens": "Output",
+        "cached": "Cached",
+        "notCached": "Not cached",
+        "reasoning": "Reasoning",
+        "avgDuration": "Avg duration",
+        "p95": "P95",
+        "cost": "Cost",
+        "requests": "MCP requests",
+        "clients": "Clients",
+        "tools": "Tools",
+        "sampled": "sampled"
+      },
+      "sections": {
+        "llmByModel": "LLM calls by model",
+        "byProvider": "By provider",
+        "byAgent": "By agent",
+        "mostUsedTools": "Most used tools",
+        "runsOverTime": "Runs over time",
+        "tokensOverTime": "Tokens over time",
+        "tokenBreakdown": "Tokens (cached vs not cached)",
+        "trafficByClient": "Traffic by client",
+        "byMethod": "By method",
+        "byTransport": "By transport",
+        "mostUsedResources": "Most used resources",
+        "mostUsedPrompts": "Most used prompts",
+        "mcpTraffic": "MCP traffic",
+        "llmCallsOverTime": "LLM calls over time",
+        "agentRuns": "Agent runs"
+      },
+      "columns": {
+        "run": "Run",
+        "model": "Model",
+        "duration": "Duration",
+        "llmCalls": "LLM",
+        "toolCalls": "Tools",
+        "tokens": "Tokens",
+        "time": "Time",
+        "calls": "Calls",
+        "count": "Count",
+        "name": "Name"
+      },
+      "run": {
+        "title": "Agent run",
+        "back": "Back to runs",
+        "summary": "Summary",
+        "timeline": "Span timeline",
+        "notFound": "Run not found.",
+        "noModel": "—",
+        "fullTrace": "Full trace"
+      },
+      "none": "—",
+      "startDate": "Start",
+      "endDate": "End",
+      "periods": {
+        "custom": "Custom range"
+      },
+      "pagination": "{from}–{to} of {total}",
+      "prev": "Previous",
+      "next": "Next",
+      "loadError": "Couldn’t load data. Please retry."
     }
   },
   "platforms": {

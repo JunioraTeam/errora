@@ -305,6 +305,7 @@
       "projects": "پروژه‌ها",
       "issues": "ایشوها",
       "performance": "کارایی",
+      "insights": "پایش هوش مصنوعی",
       "logs": "لاگ‌ها",
       "aiFixes": "رفع‌های هوش مصنوعی",
       "usage": "مصرف",
@@ -837,6 +838,84 @@
           "cursor": "کرسر"
         }
       }
+    },
+    "insights": {
+      "title": "پایش هوش مصنوعی",
+      "subtitle": "اجرای عامل‌های LLM و ترافیک سرور MCP",
+      "period": "بازه",
+      "tabs": {
+        "agents": "عامل‌های هوش مصنوعی",
+        "mcp": "سرور MCP"
+      },
+      "empty": "در این بازه فعالیتی از عامل هوش مصنوعی نیست. برای دیدن اجراها، اپ خود را با ماژول AI agents از SDK سنتری ابزارگذاری کنید.",
+      "emptyMcp": "در این بازه ترافیک MCP وجود ندارد.",
+      "stats": {
+        "agentRuns": "اجرای عامل",
+        "llmCalls": "فراخوانی LLM",
+        "toolCalls": "فراخوانی ابزار",
+        "errors": "خطاها",
+        "totalTokens": "توکن مصرف‌شده",
+        "inputTokens": "ورودی",
+        "outputTokens": "خروجی",
+        "cached": "کش‌شده",
+        "notCached": "کش‌نشده",
+        "reasoning": "استدلال",
+        "avgDuration": "میانگین مدت",
+        "p95": "صدک ۹۵",
+        "cost": "هزینه",
+        "requests": "درخواست MCP",
+        "clients": "کلاینت‌ها",
+        "tools": "ابزارها",
+        "sampled": "نمونه‌برداری‌شده"
+      },
+      "sections": {
+        "llmByModel": "فراخوانی LLM بر اساس مدل",
+        "byProvider": "بر اساس ارائه‌دهنده",
+        "byAgent": "بر اساس عامل",
+        "mostUsedTools": "پرکاربردترین ابزارها",
+        "runsOverTime": "اجراها در طول زمان",
+        "tokensOverTime": "توکن‌ها در طول زمان",
+        "tokenBreakdown": "توکن‌ها (کش‌شده در برابر کش‌نشده)",
+        "trafficByClient": "ترافیک بر اساس کلاینت",
+        "byMethod": "بر اساس متد",
+        "byTransport": "بر اساس ترنسپورت",
+        "mostUsedResources": "پرکاربردترین منابع",
+        "mostUsedPrompts": "پرکاربردترین پرامپت‌ها",
+        "mcpTraffic": "ترافیک MCP",
+        "llmCallsOverTime": "فراخوانی LLM در طول زمان",
+        "agentRuns": "اجراهای عامل"
+      },
+      "columns": {
+        "run": "اجرا",
+        "model": "مدل",
+        "duration": "مدت",
+        "llmCalls": "LLM",
+        "toolCalls": "ابزار",
+        "tokens": "توکن",
+        "time": "زمان",
+        "calls": "فراخوانی",
+        "count": "تعداد",
+        "name": "نام"
+      },
+      "run": {
+        "title": "اجرای عامل",
+        "back": "بازگشت به اجراها",
+        "summary": "خلاصه",
+        "timeline": "خط زمانی اسپن‌ها",
+        "notFound": "اجرا یافت نشد.",
+        "noModel": "—",
+        "fullTrace": "ترِیس کامل"
+      },
+      "none": "—",
+      "startDate": "شروع",
+      "endDate": "پایان",
+      "periods": {
+        "custom": "بازه دلخواه"
+      },
+      "pagination": "{from}–{to} از {total}",
+      "prev": "قبلی",
+      "next": "بعدی",
+      "loadError": "بارگیری داده ناموفق بود. دوباره تلاش کنید."
     }
   },
   "platforms": {

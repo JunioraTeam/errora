@@ -27,6 +27,30 @@ for candidate in (BASE_DIR / ".env", BASE_DIR.parent / ".env"):
         environ.Env.read_env(str(candidate))
         break
 
+# --- File-descriptor headroom ----------------------------------------------
+# Async views driven through asgiref's async_to_sync (i.e. served under a WSGI
+# server like runserver/gunicorn) plus bursty ingest open many short-lived fds;
+# on Python 3.14 leaked event-loop self-pipes make it worse. GUI/IDE- or
+# launchd-spawned processes also inherit a tiny soft RLIMIT_NOFILE (256 on
+# macOS), which surfaces as "OSError: [Errno 24] Too many open files" under load.
+# Raise the soft limit toward the hard limit at startup — best-effort, never fatal.
+def _raise_fd_limit() -> None:
+    try:
+        import resource
+    except ImportError:  # non-POSIX (e.g. Windows)
+        return
+    try:
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        target = env.int("FD_SOFT_LIMIT", default=65536)
+        want = target if hard == resource.RLIM_INFINITY else min(target, hard)
+        if soft < want:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
+    except (ValueError, OSError):
+        pass
+
+
+_raise_fd_limit()
+
 # --- Core -----------------------------------------------------------------
 SECRET_KEY = env("SECRET_KEY", default="dev-insecure-change-me")
 DEBUG = env("DEBUG")
@@ -67,6 +91,7 @@ INSTALLED_APPS = [
     "apps.organizations",
     "apps.issues",
     "apps.performance",
+    "apps.insights",
     "apps.logs",
     "apps.sourcemaps",
     "apps.ingest",
@@ -118,6 +143,28 @@ DATABASES = {
 }
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
 DATABASES["default"].setdefault("OPTIONS", {})
+
+# SQLite (dev / single-node) is a single-writer DB, so concurrent Celery ingest
+# workers writing transactions/spans hit "database is locked". Mitigate it:
+#   * WAL journal      — readers don't block the writer (concurrent reads + 1 writer)
+#   * busy_timeout     — a blocked writer waits instead of erroring immediately
+#   * IMMEDIATE txns   — take the write lock at BEGIN, avoiding the read→write
+#                        lock-upgrade deadlock that yields instant "locked" errors
+# Real concurrency still wants Postgres (the default DATABASE_URL); this just makes
+# the SQLite dev path survive bursty AI-agent / transaction ingestion.
+if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+    DATABASES["default"]["OPTIONS"].update(
+        {
+            "timeout": env.int("SQLITE_BUSY_TIMEOUT", default=30),
+            "transaction_mode": "IMMEDIATE",
+            "init_command": "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;",
+        }
+    )
+
+# --- Insights (LLM observability) ------------------------------------------
+# Seconds to cache the AI-agents / MCP dashboard aggregations. A freshly ingested
+# run can lag the dashboard by up to this long; set 0 to disable caching.
+INSIGHTS_OVERVIEW_CACHE_TTL = env.int("INSIGHTS_OVERVIEW_CACHE_TTL", default=30)
 
 # --- Event store -----------------------------------------------------------
 # High-volume events can live in ClickHouse instead of the OLTP DB. Issues,

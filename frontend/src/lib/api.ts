@@ -1,5 +1,8 @@
 import { tokenStore } from "./token-store";
 import type {
+  AgentRunDetail,
+  AgentRunListResponse,
+  AgentsOverview,
   AIConfig,
   AIProviderType,
   AlertEventType,
@@ -24,6 +27,7 @@ import type {
   IssueTrends,
   LogEntry,
   LogListResponse,
+  McpOverview,
   Membership,
   NotificationChannel,
   NotificationLog,
@@ -523,6 +527,32 @@ export const api = {
     },
     transaction(projectId: string, eventId: string) {
       return request<TransactionDetail>(`/projects/${projectId}/transaction-events/${eventId}`);
+    },
+  },
+
+  insights: {
+    agents(projectId: string, params: { stats_period?: string; start?: string; end?: string } = {}) {
+      return request<AgentsOverview>(`/projects/${projectId}/insights/agents${qs(params)}`);
+    },
+    mcp(projectId: string, params: { stats_period?: string; start?: string; end?: string } = {}) {
+      return request<McpOverview>(`/projects/${projectId}/insights/mcp${qs(params)}`);
+    },
+    runs(
+      projectId: string,
+      params: {
+        stats_period?: string;
+        start?: string;
+        end?: string;
+        limit?: number;
+        offset?: number;
+      } = {}
+    ) {
+      return request<AgentRunListResponse>(
+        `/projects/${projectId}/insights/agents/runs${qs(params)}`
+      );
+    },
+    run(projectId: string, traceId: string) {
+      return request<AgentRunDetail>(`/projects/${projectId}/insights/agents/runs/${traceId}`);
     },
   },
 

@@ -361,6 +361,162 @@ export type TransactionListResponse = {
   stats_period: string;
 };
 
+// --- LLM observability (insights) ----------------------------------------- //
+
+export type TokenUsage = {
+  input: number;
+  output: number;
+  total: number;
+  cached: number;
+  not_cached: number;
+  reasoning: number;
+  cost_usd: number;
+};
+
+export type DurationStats = {
+  avg: number | null;
+  p50: number | null;
+  p95: number | null;
+  /** True when the percentile sample was capped (very high volume). */
+  sampled?: boolean;
+};
+
+/** One row of a top-N breakdown (by model / provider / agent / tool / client / …). */
+export type InsightsBreakdown = {
+  key: string;
+  count: number;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  cached_input_tokens: number;
+};
+
+export type AgentsOverview = {
+  stats_period: string;
+  totals: {
+    agent_runs: number;
+    llm_calls: number;
+    tool_calls: number;
+    errors: number;
+    tokens: TokenUsage;
+    duration: DurationStats;
+  };
+  llm_by_model: InsightsBreakdown[];
+  by_provider: InsightsBreakdown[];
+  by_agent: InsightsBreakdown[];
+  top_tools: InsightsBreakdown[];
+  series: {
+    unit: "hour" | "day";
+    buckets: number;
+    /** ISO timestamp of the first bucket. */
+    start: string;
+    /** Bucket width in minutes (axis tick spacing). */
+    width_minutes: number;
+    runs: number[];
+    llm_calls: number[];
+    tokens_input: number[];
+    tokens_output: number[];
+  };
+};
+
+export type McpOverview = {
+  stats_period: string;
+  totals: {
+    requests: number;
+    errors: number;
+    clients: number;
+    tools: number;
+    duration: DurationStats;
+  };
+  by_client: InsightsBreakdown[];
+  by_method: InsightsBreakdown[];
+  by_transport: InsightsBreakdown[];
+  top_tools: InsightsBreakdown[];
+  top_resources: InsightsBreakdown[];
+  top_prompts: InsightsBreakdown[];
+  series: {
+    unit: "hour" | "day";
+    buckets: number;
+    start: string;
+    width_minutes: number;
+    requests: number[];
+  };
+};
+
+export type AgentRun = {
+  trace_id: string;
+  event_id: string | null;
+  name: string;
+  model: string;
+  provider: string;
+  status: string;
+  is_failed: boolean;
+  duration_ms: number;
+  llm_calls: number;
+  tool_calls: number;
+  total_tokens: number;
+  input_tokens: number;
+  output_tokens: number;
+  cached_input_tokens: number;
+  timestamp: string | null;
+};
+
+export type AgentRunListResponse = {
+  count: number;
+  results: AgentRun[];
+  stats_period: string;
+};
+
+export type AiSpanKind = "agent" | "llm" | "tool" | "handoff" | "embeddings" | "mcp";
+
+export type AiSpan = {
+  id: string;
+  span_id: string;
+  parent_span_id: string;
+  op: string;
+  kind: AiSpanKind;
+  name: string;
+  description: string;
+  status: string;
+  is_failed: boolean;
+  duration_ms: number;
+  timestamp: string;
+  provider: string;
+  model: string;
+  agent_name: string;
+  tool_name: string;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  cached_input_tokens: number;
+  reasoning_tokens: number;
+  cost_usd: number;
+  mcp_method: string;
+  mcp_tool: string;
+  mcp_resource: string;
+  mcp_prompt: string;
+  mcp_transport: string;
+  client_address: string;
+  data: Record<string, unknown>;
+};
+
+export type AgentRunDetail = {
+  trace_id: string;
+  event_id: string | null;
+  name: string;
+  model: string;
+  timestamp: string;
+  summary: {
+    llm_calls: number;
+    tool_calls: number;
+    mcp_requests: number;
+    errors: number;
+    tokens: TokenUsage;
+    duration_ms: number;
+  };
+  spans: AiSpan[];
+};
+
 // --- Logs ----------------------------------------------------------------- //
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
