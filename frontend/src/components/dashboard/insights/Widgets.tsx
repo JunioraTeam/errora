@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import * as React from "react";
+import type * as React from "react";
 import { Card } from "@/components/ui/Card";
 import type { InsightsBreakdown } from "@/lib/types";
 import { cn, formatCompact, formatNumber } from "@/lib/utils";

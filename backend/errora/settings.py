@@ -27,6 +27,7 @@ for candidate in (BASE_DIR / ".env", BASE_DIR.parent / ".env"):
         environ.Env.read_env(str(candidate))
         break
 
+
 # --- File-descriptor headroom ----------------------------------------------
 # Async views driven through asgiref's async_to_sync (i.e. served under a WSGI
 # server like runserver/gunicorn) plus bursty ingest open many short-lived fds;

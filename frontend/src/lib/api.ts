@@ -531,7 +531,10 @@ export const api = {
   },
 
   insights: {
-    agents(projectId: string, params: { stats_period?: string; start?: string; end?: string } = {}) {
+    agents(
+      projectId: string,
+      params: { stats_period?: string; start?: string; end?: string } = {}
+    ) {
       return request<AgentsOverview>(`/projects/${projectId}/insights/agents${qs(params)}`);
     },
     mcp(projectId: string, params: { stats_period?: string; start?: string; end?: string } = {}) {

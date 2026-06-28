@@ -239,7 +239,6 @@ function ProjectTrendBars({ stats }: { stats?: { errors: number[]; transactions:
               const label = `${formatDayKey(toISODate(dateFor(i)), locale)}: ${e} / ${tx}`;
               return (
                 <div
-                  // biome-ignore lint/a11y/useFocusableInteractive: hover-only chart hint, mirrors Sparkline
                   role="img"
                   key={i}
                   aria-label={label}

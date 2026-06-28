@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
-import { SpanWaterfall } from "@/components/dashboard/SpanWaterfall";
 import { StatTile } from "@/components/dashboard/insights/Widgets";
+import { SpanWaterfall } from "@/components/dashboard/SpanWaterfall";
 import { useProjects } from "@/components/providers/ProjectProvider";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -14,7 +14,10 @@ import { api } from "@/lib/api";
 import type { AiSpan, AiSpanKind } from "@/lib/types";
 import { cn, formatCompact, formatDuration, formatNumber } from "@/lib/utils";
 
-const KIND_VARIANT: Record<AiSpanKind, "default" | "accent" | "success" | "danger" | "muted" | "outline"> = {
+const KIND_VARIANT: Record<
+  AiSpanKind,
+  "default" | "accent" | "success" | "danger" | "muted" | "outline"
+> = {
   agent: "accent",
   llm: "default",
   tool: "success",
@@ -105,9 +108,17 @@ export default function AgentRunDetailPage({ params }: { params: Promise<{ id: s
         <StatTile label={t("stats.requests")} value={num(summary.mcp_requests)} />
         <StatTile label={t("stats.avgDuration")} value={dur(summary.duration_ms)} />
         <StatTile label={t("stats.totalTokens")} value={compact(summary.tokens.total)} />
-        <StatTile label={t("stats.inputTokens")} value={compact(summary.tokens.input)} sub={`${t("stats.cached")} ${compact(summary.tokens.cached)}`} />
+        <StatTile
+          label={t("stats.inputTokens")}
+          value={compact(summary.tokens.input)}
+          sub={`${t("stats.cached")} ${compact(summary.tokens.cached)}`}
+        />
         <StatTile label={t("stats.outputTokens")} value={compact(summary.tokens.output)} />
-        <StatTile label={t("stats.errors")} value={num(summary.errors)} tone={summary.errors > 0 ? "danger" : "default"} />
+        <StatTile
+          label={t("stats.errors")}
+          value={num(summary.errors)}
+          tone={summary.errors > 0 ? "danger" : "default"}
+        />
       </div>
 
       <Card className="overflow-hidden">
@@ -181,17 +192,17 @@ function SpanRow({
           </span>
           {span.is_failed && <Badge variant="danger">!</Badge>}
         </div>
-        <div className="flex shrink-0 items-center gap-3 text-xs tabular-nums text-muted-foreground" dir="ltr">
+        <div
+          className="flex shrink-0 items-center gap-3 text-xs tabular-nums text-muted-foreground"
+          dir="ltr"
+        >
           {span.total_tokens > 0 && <span>{compact(span.total_tokens)} tok</span>}
           <span className="text-foreground">{dur(span.duration_ms)}</span>
         </div>
       </div>
       <div className="mt-1.5 h-1.5 w-full rounded-full bg-muted">
         <div
-          className={cn(
-            "h-full rounded-full",
-            span.is_failed ? "bg-danger" : "bg-accent"
-          )}
+          className={cn("h-full rounded-full", span.is_failed ? "bg-danger" : "bg-accent")}
           style={{ marginInlineStart: `${left}%`, width: `${width}%` }}
           aria-hidden
         />

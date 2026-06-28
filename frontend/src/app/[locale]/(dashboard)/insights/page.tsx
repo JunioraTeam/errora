@@ -15,8 +15,6 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
-import { EmptyState, PageHeader } from "@/components/dashboard/PageHeader";
-import { ProjectSwitcher } from "@/components/dashboard/ProjectSwitcher";
 import { BarChart, StackedBarChart } from "@/components/dashboard/insights/BarChart";
 import {
   BreakdownList,
@@ -24,6 +22,8 @@ import {
   StatTile,
   TokenBar,
 } from "@/components/dashboard/insights/Widgets";
+import { EmptyState, PageHeader } from "@/components/dashboard/PageHeader";
+import { ProjectSwitcher } from "@/components/dashboard/ProjectSwitcher";
 import { useProjects } from "@/components/providers/ProjectProvider";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -204,8 +204,6 @@ export default function InsightsPage() {
             hasProject={!!currentProject}
             t={t}
             num={num}
-            compact={compact}
-            dur={dur}
           />
         )}
       </div>
@@ -259,7 +257,10 @@ function AgentsTab({
   if (isError) {
     return (
       <Card className="p-5">
-        <EmptyState icon={<AlertTriangle className="h-8 w-8 text-danger" />} message={t("loadError")} />
+        <EmptyState
+          icon={<AlertTriangle className="h-8 w-8 text-danger" />}
+          message={t("loadError")}
+        />
       </Card>
     );
   }
@@ -278,16 +279,32 @@ function AgentsTab({
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label={t("stats.agentRuns")} value={num(totals.agent_runs)} icon={<Bot className="h-4 w-4" />} />
-        <StatTile label={t("stats.llmCalls")} value={num(totals.llm_calls)} icon={<Cpu className="h-4 w-4" />} />
-        <StatTile label={t("stats.toolCalls")} value={num(totals.tool_calls)} icon={<Wrench className="h-4 w-4" />} />
+        <StatTile
+          label={t("stats.agentRuns")}
+          value={num(totals.agent_runs)}
+          icon={<Bot className="h-4 w-4" />}
+        />
+        <StatTile
+          label={t("stats.llmCalls")}
+          value={num(totals.llm_calls)}
+          icon={<Cpu className="h-4 w-4" />}
+        />
+        <StatTile
+          label={t("stats.toolCalls")}
+          value={num(totals.tool_calls)}
+          icon={<Wrench className="h-4 w-4" />}
+        />
         <StatTile
           label={t("stats.errors")}
           value={num(totals.errors)}
           tone={totals.errors > 0 ? "danger" : "default"}
           icon={<AlertTriangle className="h-4 w-4" />}
         />
-        <StatTile label={t("stats.totalTokens")} value={compact(totals.tokens.total)} icon={<Coins className="h-4 w-4" />} />
+        <StatTile
+          label={t("stats.totalTokens")}
+          value={compact(totals.tokens.total)}
+          icon={<Coins className="h-4 w-4" />}
+        />
         {totals.tokens.cost_usd > 0 ? (
           <StatTile label={t("stats.cost")} value={`$${totals.tokens.cost_usd.toFixed(4)}`} />
         ) : (
@@ -371,8 +388,16 @@ function AgentsTab({
           empty={t("none")}
           labels={tokenLabels(t)}
         />
-        <BreakdownList title={t("sections.byProvider")} items={data.by_provider} empty={t("none")} />
-        <BreakdownList title={t("sections.mostUsedTools")} items={data.top_tools} empty={t("none")} />
+        <BreakdownList
+          title={t("sections.byProvider")}
+          items={data.by_provider}
+          empty={t("none")}
+        />
+        <BreakdownList
+          title={t("sections.mostUsedTools")}
+          items={data.top_tools}
+          empty={t("none")}
+        />
       </div>
 
       <Card className="overflow-hidden">
@@ -409,7 +434,10 @@ function AgentsTab({
                       </span>
                     </div>
                   </TD>
-                  <TD className="hidden font-mono text-xs text-muted-foreground sm:table-cell" dir="ltr">
+                  <TD
+                    className="hidden font-mono text-xs text-muted-foreground sm:table-cell"
+                    dir="ltr"
+                  >
                     {r.model || "—"}
                   </TD>
                   <TD className="text-end tabular-nums">{num(r.llm_calls)}</TD>
@@ -498,8 +526,6 @@ function McpTab({
   hasProject,
   t,
   num,
-  compact,
-  dur,
 }: {
   data: import("@/lib/types").McpOverview | undefined;
   loading: boolean;
@@ -507,14 +533,15 @@ function McpTab({
   hasProject: boolean;
   t: Tt;
   num: Fmt;
-  compact: Fmt;
-  dur: DurFmt;
 }) {
   if (loading) return <SkeletonGrid />;
   if (isError) {
     return (
       <Card className="p-5">
-        <EmptyState icon={<AlertTriangle className="h-8 w-8 text-danger" />} message={t("loadError")} />
+        <EmptyState
+          icon={<AlertTriangle className="h-8 w-8 text-danger" />}
+          message={t("loadError")}
+        />
       </Card>
     );
   }
@@ -530,10 +557,27 @@ function McpTab({
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label={t("stats.requests")} value={num(totals.requests)} icon={<Server className="h-4 w-4" />} />
-        <StatTile label={t("stats.clients")} value={num(totals.clients)} icon={<Users className="h-4 w-4" />} />
-        <StatTile label={t("stats.tools")} value={num(totals.tools)} icon={<Wrench className="h-4 w-4" />} />
-        <StatTile label={t("stats.errors")} value={num(totals.errors)} tone={totals.errors > 0 ? "danger" : "default"} icon={<AlertTriangle className="h-4 w-4" />} />
+        <StatTile
+          label={t("stats.requests")}
+          value={num(totals.requests)}
+          icon={<Server className="h-4 w-4" />}
+        />
+        <StatTile
+          label={t("stats.clients")}
+          value={num(totals.clients)}
+          icon={<Users className="h-4 w-4" />}
+        />
+        <StatTile
+          label={t("stats.tools")}
+          value={num(totals.tools)}
+          icon={<Wrench className="h-4 w-4" />}
+        />
+        <StatTile
+          label={t("stats.errors")}
+          value={num(totals.errors)}
+          tone={totals.errors > 0 ? "danger" : "default"}
+          icon={<AlertTriangle className="h-4 w-4" />}
+        />
       </div>
 
       <Card className="p-4">
@@ -550,12 +594,42 @@ function McpTab({
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <BreakdownList title={t("sections.trafficByClient")} items={data.by_client} empty={t("none")} getValue={byUsage} />
-        <BreakdownList title={t("sections.byMethod")} items={data.by_method} empty={t("none")} getValue={byUsage} />
-        <BreakdownList title={t("sections.mostUsedTools")} items={data.top_tools} empty={t("none")} getValue={byUsage} />
-        <BreakdownList title={t("sections.mostUsedResources")} items={data.top_resources} empty={t("none")} getValue={byUsage} />
-        <BreakdownList title={t("sections.mostUsedPrompts")} items={data.top_prompts} empty={t("none")} getValue={byUsage} />
-        <BreakdownList title={t("sections.byTransport")} items={data.by_transport} empty={t("none")} getValue={byUsage} />
+        <BreakdownList
+          title={t("sections.trafficByClient")}
+          items={data.by_client}
+          empty={t("none")}
+          getValue={byUsage}
+        />
+        <BreakdownList
+          title={t("sections.byMethod")}
+          items={data.by_method}
+          empty={t("none")}
+          getValue={byUsage}
+        />
+        <BreakdownList
+          title={t("sections.mostUsedTools")}
+          items={data.top_tools}
+          empty={t("none")}
+          getValue={byUsage}
+        />
+        <BreakdownList
+          title={t("sections.mostUsedResources")}
+          items={data.top_resources}
+          empty={t("none")}
+          getValue={byUsage}
+        />
+        <BreakdownList
+          title={t("sections.mostUsedPrompts")}
+          items={data.top_prompts}
+          empty={t("none")}
+          getValue={byUsage}
+        />
+        <BreakdownList
+          title={t("sections.byTransport")}
+          items={data.by_transport}
+          empty={t("none")}
+          getValue={byUsage}
+        />
       </div>
     </div>
   );

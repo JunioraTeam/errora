@@ -25,7 +25,11 @@ const tipLeft = (i: number, n: number) =>
 
 // x-axis tick indices: first / middle / last (or each when ≤3, none when empty).
 const xTicks = (n: number) =>
-  n < 1 ? [] : n <= 3 ? Array.from({ length: n }, (_, i) => i) : [0, Math.floor((n - 1) / 2), n - 1];
+  n < 1
+    ? []
+    : n <= 3
+      ? Array.from({ length: n }, (_, i) => i)
+      : [0, Math.floor((n - 1) / 2), n - 1];
 
 /**
  * Time-bucketed bar chart with x/y axes and a hover tooltip. Each bar is one
@@ -238,7 +242,10 @@ export function StackedBarChart({
                       "mx-auto flex w-full max-w-[26px] flex-col-reverse overflow-hidden rounded-t-sm transition-opacity",
                       hover !== null && hover !== i ? "opacity-40" : "opacity-100"
                     )}
-                    style={{ height: `${max > 0 ? (tot / max) * 100 : 0}%`, minHeight: tot > 0 ? 2 : 0 }}
+                    style={{
+                      height: `${max > 0 ? (tot / max) * 100 : 0}%`,
+                      minHeight: tot > 0 ? 2 : 0,
+                    }}
                   >
                     {series.map((s) => (
                       <span

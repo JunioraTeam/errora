@@ -363,9 +363,7 @@ def test_series_daily_bucket_matches_span_date(project):
     ts = datetime(2026, 6, 20, 15, 0, tzinfo=_UTC).timestamp()
     store_and_extract(project, _agent_txn(start=ts))
 
-    ov = queries.agents_overview(
-        project, start="2026-06-18T00:00:00Z", end="2026-06-25T00:00:00Z"
-    )
+    ov = queries.agents_overview(project, start="2026-06-18T00:00:00Z", end="2026-06-25T00:00:00Z")
     s = ov["series"]
     assert s["unit"] == "day"
     assert sum(s["runs"]) == 1
@@ -382,9 +380,7 @@ def test_series_hourly_bucket_matches_span_hour(project):
     ts = datetime(2026, 6, 20, 3, 30, tzinfo=_UTC).timestamp()
     store_and_extract(project, _agent_txn(start=ts))
 
-    ov = queries.agents_overview(
-        project, start="2026-06-20T00:00:00Z", end="2026-06-20T06:00:00Z"
-    )
+    ov = queries.agents_overview(project, start="2026-06-20T00:00:00Z", end="2026-06-20T06:00:00Z")
     s = ov["series"]
     assert s["unit"] == "hour"
     idx = next(i for i, v in enumerate(s["runs"]) if v)

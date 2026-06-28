@@ -262,8 +262,6 @@ def extract_ai_spans(project, txn_data: dict[str, Any], event_id: str | None = N
     # transactions' distinct spans.
     span_ids = [r.span_id for r in rows if r.span_id]
     if trace_id and span_ids:
-        AiSpan.objects.filter(
-            project=project, trace_id=trace_id, span_id__in=span_ids
-        ).delete()
+        AiSpan.objects.filter(project=project, trace_id=trace_id, span_id__in=span_ids).delete()
     AiSpan.objects.bulk_create(rows, batch_size=500)
     return len(rows)

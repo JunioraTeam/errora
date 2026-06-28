@@ -67,7 +67,5 @@ def store_transaction(project, data: dict[str, Any]) -> dict[str, Any]:
     # AI/MCP spans) write within this same transaction — one SQLite writer-lock
     # acquisition per ingested trace instead of two. Subscribers must be
     # best-effort (swallow their own errors) so they can't roll back the store.
-    transaction_stored.send(
-        sender=None, project=project, data=data, event_id=str(txn.event_id)
-    )
+    transaction_stored.send(sender=None, project=project, data=data, event_id=str(txn.event_id))
     return {"event_id": str(txn.event_id), "group": str(group.id), "trace_id": txn.trace_id}
