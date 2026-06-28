@@ -22,6 +22,12 @@ export function Dialog({ open, onClose, title, description, children, className 
   React.useEffect(() => setMounted(true), []);
   const panelRef = React.useRef<HTMLDivElement>(null);
 
+  // Keep onClose in a ref so the focus/key effect doesn't re-run (and re-steal
+  // focus to the first focusable) every time a parent passes a new inline
+  // onClose identity on re-render — e.g. on each keystroke in a dialog input.
+  const onCloseRef = React.useRef(onClose);
+  onCloseRef.current = onClose;
+
   const FOCUSABLE =
     'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
@@ -35,7 +41,7 @@ export function Dialog({ open, onClose, title, description, children, className 
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== "Tab") return;
@@ -62,7 +68,7 @@ export function Dialog({ open, onClose, title, description, children, className 
       document.body.style.overflow = "";
       previouslyFocused?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!mounted) return null;
 

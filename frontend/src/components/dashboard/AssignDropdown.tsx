@@ -3,14 +3,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Search, UserPlus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { api } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 
 const PANEL_WIDTH = 288;
 
@@ -38,6 +38,7 @@ export function AssignDropdown({
   compact?: boolean;
 }) {
   const t = useTranslations("dashboard.issueDetail");
+  const locale = useLocale();
   const { user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -139,7 +140,7 @@ export function AssignDropdown({
         >
           {assigned.length > 0 ? (
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-              {assigned.length}
+              {formatNumber(assigned.length, locale)}
             </span>
           ) : (
             <UserPlus className="h-3.5 w-3.5" />
@@ -199,8 +200,9 @@ export function AssignDropdown({
                           role="option"
                           aria-selected={assigned.includes(m.user)}
                           tabIndex={0}
+                          onClick={() => !saving && toggle(m.user)}
                           onKeyDown={(e) => onOptionKey(e, m.user)}
-                          className="flex items-center gap-3 rounded-[var(--radius-sm)] px-2 py-2 hover:bg-muted focus:bg-muted focus:outline-none"
+                          className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] px-2 py-2 hover:bg-muted focus:bg-muted focus:outline-none"
                         >
                           <Checkbox
                             checked={assigned.includes(m.user)}
