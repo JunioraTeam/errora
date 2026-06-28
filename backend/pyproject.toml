@@ -32,6 +32,16 @@ dependencies = [
     "whitenoise>=6.7",
 ]
 
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+# Django project, not a library. Pin discovery so flat-layout doesn't choke on
+# the two top-level dirs. namespaces=true because apps/ has no __init__.py.
+include = ["apps*", "errora*"]
+namespaces = true
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3",
