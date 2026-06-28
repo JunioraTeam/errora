@@ -110,6 +110,9 @@ query degrades gracefully across Postgres/MySQL/SQLite; see `apps/issues/search.
 - Python: type hints, `from __future__ import annotations`, **ruff** for lint **and** format
   (`ruff check .`, `ruff format .`; line length 100). Migrations are excluded from lint.
 - Frontend: **biome** for lint **and** format (`npm run lint`, `npm run format`). No eslint/prettier.
+- **Lint + format must always pass before finishing any change.** Backend: `ruff check .` and
+  `ruff format --check .` clean. Frontend: `npm run lint` (`biome check .`) clean — run
+  `npm run format` to auto-fix. CI gates on these, so a red lint blocks the merge.
 - Keep modules small and single-purpose; match the surrounding code's idiom and comment density.
 - Don't introduce Kafka — the broker is intentionally Redis.
 
