@@ -363,9 +363,7 @@ def test_notification_replay(auth_api, org, monkeypatch):
     channel = NotificationChannel.objects.create(
         organization=org, name="wh", type="webhook", config={"url": "http://x"}
     )
-    rule = AlertRule.objects.create(
-        organization=org, event_type="issue.created", channel=channel
-    )
+    rule = AlertRule.objects.create(organization=org, event_type="issue.created", channel=channel)
     log = NotificationLog.objects.create(
         rule=rule,
         channel_type="webhook",
@@ -378,9 +376,7 @@ def test_notification_replay(auth_api, org, monkeypatch):
         "apps.notifications.tasks.deliver_notification.delay",
         lambda *a, **k: calls.append(a),
     )
-    resp = auth_api.post(
-        f"/api/v1/organizations/{org.id}/notification-logs/{log.id}/replay"
-    )
+    resp = auth_api.post(f"/api/v1/organizations/{org.id}/notification-logs/{log.id}/replay")
     assert resp.status_code == 202
     assert calls and calls[0][0] == str(rule.id)
 
@@ -406,9 +402,7 @@ def test_ingest_sampling_drops_all(api, project, settings, monkeypatch):
     project.sample_rate = 0.0
     project.save(update_fields=["sample_rate"])
     calls = []
-    monkeypatch.setattr(
-        "apps.ingest.views.process_event.delay", lambda *a, **k: calls.append(a)
-    )
+    monkeypatch.setattr("apps.ingest.views.process_event.delay", lambda *a, **k: calls.append(a))
     key = project.keys.first().public_key
     import json as _json
 
@@ -465,9 +459,7 @@ def test_bulk_resolve_and_priority(auth_api, project):
     i1 = Issue.objects.get(id=store_event(project, _exc("ValueError"))["issue"])
     i2 = Issue.objects.get(id=store_event(project, _exc("KeyError"))["issue"])
     url = f"/api/v1/projects/{project.id}/issues/bulk"
-    resp = auth_api.post(
-        url, {"ids": [str(i1.id), str(i2.id)], "action": "resolve"}, format="json"
-    )
+    resp = auth_api.post(url, {"ids": [str(i1.id), str(i2.id)], "action": "resolve"}, format="json")
     assert resp.status_code == 200
     assert resp.data["updated"] == 2
     i1.refresh_from_db()
@@ -498,9 +490,7 @@ def test_bulk_assign(auth_api, project, user):
 @pytest.mark.django_db
 def test_issue_trends(auth_api, project):
     issue = Issue.objects.get(id=store_event(project, _exc())["issue"])
-    resp = auth_api.get(
-        f"/api/v1/projects/{project.id}/issues/trends?ids={issue.id}&days=14"
-    )
+    resp = auth_api.get(f"/api/v1/projects/{project.id}/issues/trends?ids={issue.id}&days=14")
     assert resp.status_code == 200
     series = resp.data.get(str(issue.id))
     assert series is not None and len(series) == 14
@@ -514,9 +504,7 @@ def test_ingest_store_without_trailing_slash(api, project, monkeypatch):
     import json as _json
 
     calls = []
-    monkeypatch.setattr(
-        "apps.ingest.views.process_event.delay", lambda *a, **k: calls.append(a)
-    )
+    monkeypatch.setattr("apps.ingest.views.process_event.delay", lambda *a, **k: calls.append(a))
     key = project.keys.first().public_key
     resp = api.post(
         f"/api/{project.id}/store",  # note: no trailing slash

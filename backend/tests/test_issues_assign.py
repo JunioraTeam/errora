@@ -9,9 +9,17 @@ from apps.organizations.roles import Role
 
 def _exc():
     return {
-        "exception": {"values": [{"type": "ValueError", "value": "x",
-                       "stacktrace": {"frames": [{"filename": "a.py", "function": "f",
-                                                  "in_app": True}]}}]},
+        "exception": {
+            "values": [
+                {
+                    "type": "ValueError",
+                    "value": "x",
+                    "stacktrace": {
+                        "frames": [{"filename": "a.py", "function": "f", "in_app": True}]
+                    },
+                }
+            ]
+        },
         "level": "error",
     }
 

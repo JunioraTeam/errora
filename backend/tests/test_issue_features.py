@@ -107,7 +107,11 @@ def repo(org):
         organization=org, provider="gitlab", base_url="https://gl", access_token="t"
     )
     return Repository.objects.create(
-        integration=integ, external_id="100", name="x", path_with_namespace="g/x", web_url="https://gl/x"
+        integration=integ,
+        external_id="100",
+        name="x",
+        path_with_namespace="g/x",
+        web_url="https://gl/x",
     )
 
 

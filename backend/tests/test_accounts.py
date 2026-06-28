@@ -6,7 +6,10 @@ from apps.accounts.otp import issue_otp, verify_otp
 
 @pytest.mark.django_db
 def test_access_rejects_invalid_email(api):
-    resp = api.post("/api/v1/auth/access", {"identifier": "not-an-email", "password": "password123"})
+    resp = api.post(
+        "/api/v1/auth/access",
+        {"identifier": "not-an-email", "password": "password123"},
+    )
     assert resp.status_code == 400
     assert not User.objects.exists()
 

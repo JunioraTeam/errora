@@ -5,7 +5,14 @@ from __future__ import annotations
 from django.db import transaction
 from django.utils import timezone
 
-from .models import Membership, Organization, OrganizationInvite, Project, ProjectKey, ProjectMembership
+from .models import (
+    Membership,
+    Organization,
+    OrganizationInvite,
+    Project,
+    ProjectKey,
+    ProjectMembership,
+)
 from .roles import Role, role_has
 
 

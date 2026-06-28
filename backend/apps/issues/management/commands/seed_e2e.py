@@ -106,9 +106,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        user, created = User.objects.get_or_create(
-            email=EMAIL, defaults={"email_verified": True}
-        )
+        user, created = User.objects.get_or_create(email=EMAIL, defaults={"email_verified": True})
         user.email_verified = True
         user.is_active = True
         user.set_password(PASSWORD)

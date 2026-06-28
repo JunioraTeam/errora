@@ -104,9 +104,7 @@ class OTPVerifyView(APIView):
         ident = ser.validated_data["identifier"]
         if not await sync_to_async(verify_otp)(ident, ser.validated_data["code"]):
             return Response({"detail": "Invalid or expired code."}, status=400)
-        user, _ = await User.objects.aget_or_create(
-            email=ident, defaults={"email_verified": True}
-        )
+        user, _ = await User.objects.aget_or_create(email=ident, defaults={"email_verified": True})
         if not user.email_verified:
             user.email_verified = True
             await user.asave(update_fields=["email_verified"])

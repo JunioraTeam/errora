@@ -71,7 +71,7 @@ def test_normalize_logs_accepts_bare_record():
 
 
 def test_parse_query_splits_text_and_tokens():
-    p = parse_query('timeout level:error service:checkout trace:abc')
+    p = parse_query("timeout level:error service:checkout trace:abc")
     assert p.text == "timeout"
     assert ("level", "error", False) in p.column_filters
     assert ("trace_id", "abc", False) in p.column_filters

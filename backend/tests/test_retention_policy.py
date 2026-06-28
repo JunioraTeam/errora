@@ -64,9 +64,7 @@ def test_owner_sets_and_clears_retention(auth_api, org, settings):
 @pytest.mark.django_db
 @pytest.mark.parametrize("bad", [0, -5, 99999])
 def test_retention_bounds_rejected(auth_api, org, bad):
-    resp = auth_api.patch(
-        f"/api/v1/organizations/{org.id}", {"retention_days": bad}, format="json"
-    )
+    resp = auth_api.patch(f"/api/v1/organizations/{org.id}", {"retention_days": bad}, format="json")
     assert resp.status_code == 400
     assert "retention_days" in resp.data
 

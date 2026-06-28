@@ -14,9 +14,7 @@ class UserAdmin(BaseUserAdmin):
         ("Profile", {"fields": ("name", "email_verified")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups")}),
     )
-    add_fieldsets = (
-        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
-    )
+    add_fieldsets = ((None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),)
 
 
 @admin.register(OTPCode)
