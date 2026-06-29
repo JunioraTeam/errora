@@ -3,18 +3,86 @@
 import { useQuery } from "@tanstack/react-query";
 import { Search, UserPlus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { api } from "@/lib/api";
-import { cn, formatNumber } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const PANEL_WIDTH = 288;
 
 type Pos = { left: number; top?: number; bottom?: number; maxHeight: number };
+
+type MemberLite = { user: string; user_name?: string | null };
+
+/** First letters of the first and last word of a name, e.g. "Ada Lovelace" → "AL". */
+function initialsOf(name?: string | null) {
+  if (!name?.trim()) return "?";
+  const parts = name.trim().split(/\s+/);
+  const first = parts[0][0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+  return (first + last).toUpperCase() || "?";
+}
+
+/** Deterministic background color per user id so an avatar keeps its color. */
+function colorFor(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return `hsl(${h % 360} 60% 45%)`;
+}
+
+/**
+ * Overlapping stack of assignee avatars (initials on a per-user color). Shows
+ * up to three, then a "+N" chip. The border separates overlapping circles.
+ */
+function AvatarStack({
+  ids,
+  members,
+  size = "sm",
+}: {
+  ids: string[];
+  members?: MemberLite[];
+  size?: "sm" | "md";
+}) {
+  const max = 3;
+  const shown = ids.slice(0, max);
+  const extra = ids.length - shown.length;
+  const dims = size === "sm" ? "h-5 w-5 text-[9px]" : "h-6 w-6 text-[10px]";
+  return (
+    <span className="flex items-center">
+      {shown.map((id, i) => {
+        const name = members?.find((m) => m.user === id)?.user_name ?? undefined;
+        return (
+          <span
+            key={id}
+            title={name ?? undefined}
+            className={cn(
+              "flex items-center justify-center rounded-full border-2 border-card font-semibold text-white",
+              dims,
+              i > 0 && "-ms-1.5"
+            )}
+            style={{ backgroundColor: colorFor(id) }}
+          >
+            {initialsOf(name)}
+          </span>
+        );
+      })}
+      {extra > 0 && (
+        <span
+          className={cn(
+            "flex items-center justify-center rounded-full border-2 border-card bg-muted font-semibold text-muted-foreground -ms-1.5",
+            dims
+          )}
+        >
+          +{extra}
+        </span>
+      )}
+    </span>
+  );
+}
 
 /**
  * Searchable member-picker dropdown for assigning an issue. The panel is
@@ -38,7 +106,6 @@ export function AssignDropdown({
   compact?: boolean;
 }) {
   const t = useTranslations("dashboard.issueDetail");
-  const locale = useLocale();
   const { user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -90,7 +157,7 @@ export function AssignDropdown({
   const { data: members } = useQuery({
     queryKey: ["members", orgId],
     queryFn: () => api.orgs.members(orgId as string),
-    enabled: open && !!orgId,
+    enabled: !!orgId,
   });
 
   const q = search.trim().toLowerCase();
@@ -139,17 +206,28 @@ export function AssignDropdown({
           )}
         >
           {assigned.length > 0 ? (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-              {formatNumber(assigned.length, locale)}
-            </span>
+            <AvatarStack ids={assigned} members={members} />
           ) : (
             <UserPlus className="h-3.5 w-3.5" />
           )}
         </button>
       ) : (
-        <Button variant="outline" size="sm" onClick={() => setOpen((v) => !v)}>
-          <UserPlus className="h-4 w-4" />
-          {assigned.length > 0 ? t("assignedTo", { count: assigned.length }) : t("assign")}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={
+            assigned.length > 0 ? t("assignedTo", { count: assigned.length }) : t("assign")
+          }
+        >
+          {assigned.length > 0 ? (
+            <AvatarStack ids={assigned} members={members} size="md" />
+          ) : (
+            <>
+              <UserPlus className="h-4 w-4" />
+              {t("assign")}
+            </>
+          )}
         </Button>
       )}
 
