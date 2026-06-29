@@ -13,6 +13,7 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/Table";
 import { api } from "@/lib/api";
 import type { AutoFixRun, AutofixRunStatus } from "@/lib/types";
+import { enumParam, useQueryState } from "@/lib/useQueryState";
 
 const STATUSES: AutofixRunStatus[] = [
   "queued",
@@ -34,7 +35,10 @@ function statusVariant(s: AutofixRunStatus): "success" | "danger" | "accent" | "
 export default function AiFixesPage() {
   const t = useTranslations("dashboard.aiFixes");
   const { currentOrg } = useOrg();
-  const [status, setStatus] = React.useState<AutofixRunStatus | "">("");
+  const [status, setStatus] = useQueryState<AutofixRunStatus | "">(
+    "status",
+    enumParam(STATUSES, "")
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["autofix-runs", currentOrg?.id, status],

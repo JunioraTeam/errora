@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/datetime";
 import { LOG_LEVELS, type LogEntry, type LogLevel } from "@/lib/types";
 import { cn, localizeDigits } from "@/lib/utils";
+import { enumParam, numberParam, setParam, stringParam, useQueryState } from "@/lib/useQueryState";
 
 const PAGE_SIZE = 50;
 const PERIODS = ["1h", "24h", "7d", "14d", "30d"] as const;
@@ -63,11 +64,11 @@ export default function LogsPage() {
   const { currentProject } = useProjects();
   const projectId = currentProject?.id;
 
-  const [search, setSearch] = React.useState("");
-  const [debounced, setDebounced] = React.useState("");
-  const [period, setPeriod] = React.useState<(typeof PERIODS)[number]>("24h");
-  const [levels, setLevels] = React.useState<Set<LogLevel>>(new Set());
-  const [offset, setOffset] = React.useState(0);
+  const [search, setSearch] = useQueryState("q", stringParam());
+  const [debounced, setDebounced] = React.useState(search);
+  const [period, setPeriod] = useQueryState("period", enumParam(PERIODS, "24h"));
+  const [levels, setLevels] = useQueryState("level", setParam(LOG_LEVELS));
+  const [offset, setOffset] = useQueryState("offset", numberParam());
   const [selected, setSelected] = React.useState<LogEntry | null>(null);
 
   React.useEffect(() => {
@@ -77,8 +78,16 @@ export default function LogsPage() {
 
   const levelParam = [...levels].join(",");
 
+  // Reset paging on filter change, but not on first mount (keeps a URL offset).
+  const mounted = React.useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally resets paging on filter change
-  React.useEffect(() => setOffset(0), [debounced, period, levelParam, projectId]);
+  React.useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setOffset(0);
+  }, [debounced, period, levelParam, projectId]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["logs", projectId, debounced, period, levelParam, offset],
@@ -100,12 +109,10 @@ export default function LogsPage() {
   const to = Math.min(offset + PAGE_SIZE, total);
 
   function toggleLevel(lvl: LogLevel) {
-    setLevels((prev) => {
-      const next = new Set(prev);
-      if (next.has(lvl)) next.delete(lvl);
-      else next.add(lvl);
-      return next;
-    });
+    const next = new Set(levels);
+    if (next.has(lvl)) next.delete(lvl);
+    else next.add(lvl);
+    setLevels(next);
   }
 
   return (

@@ -16,11 +16,14 @@ import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import { cn, formatDuration, formatPercent, formatRate, localizeDigits } from "@/lib/utils";
+import { enumParam, numberParam, stringParam, useQueryState } from "@/lib/useQueryState";
 
 const PAGE_SIZE = 50;
 const PERIODS = ["1h", "24h", "7d", "14d", "30d"] as const;
-type SortKey = "name" | "tpm" | "p50" | "p95" | "failure_rate" | "last_seen";
-type Order = "asc" | "desc";
+const SORT_KEYS = ["name", "tpm", "p50", "p95", "failure_rate", "last_seen"] as const;
+const ORDERS = ["asc", "desc"] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+type Order = (typeof ORDERS)[number];
 
 export default function PerformancePage() {
   const t = useTranslations("dashboard.performance");
@@ -31,24 +34,32 @@ export default function PerformancePage() {
   const { currentProject } = useProjects();
   const projectId = currentProject?.id;
 
-  const [search, setSearch] = React.useState("");
-  const [debounced, setDebounced] = React.useState("");
-  const [period, setPeriod] = React.useState<(typeof PERIODS)[number]>("24h");
-  const [sort, setSort] = React.useState<SortKey>("last_seen");
-  const [order, setOrder] = React.useState<Order>("desc");
-  const [offset, setOffset] = React.useState(0);
+  const [search, setSearch] = useQueryState("q", stringParam());
+  const [debounced, setDebounced] = React.useState(search);
+  const [period, setPeriod] = useQueryState("period", enumParam(PERIODS, "24h"));
+  const [sort, setSort] = useQueryState("sort", enumParam(SORT_KEYS, "last_seen"));
+  const [order, setOrder] = useQueryState("order", enumParam(ORDERS, "desc"));
+  const [offset, setOffset] = useQueryState("offset", numberParam());
 
   React.useEffect(() => {
     const id = setTimeout(() => setDebounced(search), 300);
     return () => clearTimeout(id);
   }, [search]);
 
+  // Reset paging on filter change, but not on first mount (keeps a URL offset).
+  const mounted = React.useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally resets paging on filter change
-  React.useEffect(() => setOffset(0), [debounced, period, sort, order, projectId]);
+  React.useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setOffset(0);
+  }, [debounced, period, sort, order, projectId]);
 
   // Click a column: sort by it (desc first); click the active column to flip.
   function toggleSort(key: SortKey) {
-    if (sort === key) setOrder((o) => (o === "desc" ? "asc" : "desc"));
+    if (sort === key) setOrder(order === "desc" ? "asc" : "desc");
     else {
       setSort(key);
       setOrder("desc");

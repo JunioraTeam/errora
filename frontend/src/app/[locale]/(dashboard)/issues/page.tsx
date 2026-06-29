@@ -35,9 +35,22 @@ import { useRouter } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import type { BulkAction, Issue, IssueLevel, IssuePriority, IssueStatus } from "@/lib/types";
 import { cn, formatNumber, localizeDigits } from "@/lib/utils";
+import { enumParam, numberParam, type Serde, stringParam, useQueryState } from "@/lib/useQueryState";
 
 const PAGE_SIZE = 50;
-const TREND_BUCKETS: Record<"24h" | "30d", number> = { "24h": 24, "30d": 30 };
+const TREND_WINDOWS = ["24h", "30d"] as const;
+const TREND_BUCKETS: Record<(typeof TREND_WINDOWS)[number], number> = { "24h": 24, "30d": 30 };
+
+const ISSUE_STATUSES: IssueStatus[] = ["unresolved", "resolved", "ignored", "archived"];
+const ISSUE_LEVELS: IssueLevel[] = ["fatal", "error", "warning", "info", "debug"];
+
+// Default status is "unresolved" (omitted from the URL); the "all" view has no
+// natural empty string, so it is stored under the explicit "all" sentinel.
+const statusParam: Serde<IssueStatus | ""> = {
+  parse: (raw) =>
+    raw === "all" ? "" : ISSUE_STATUSES.includes(raw as IssueStatus) ? (raw as IssueStatus) : "unresolved",
+  serialize: (v) => (v === "unresolved" ? null : v === "" ? "all" : v),
+};
 
 const PRIORITY_BADGE: Record<IssuePriority, string> = {
   high: "bg-danger/15 text-danger",
@@ -65,24 +78,30 @@ export default function IssuesPage() {
   const projectId = currentProject?.id;
   const orgId = currentOrg?.id;
 
-  const [status, setStatus] = React.useState<IssueStatus | "">("unresolved");
-  const [level, setLevel] = React.useState<IssueLevel | "">("");
-  const [search, setSearch] = React.useState("");
-  const [debounced, setDebounced] = React.useState("");
-  const [dateFrom, setDateFrom] = React.useState("");
-  const [dateTo, setDateTo] = React.useState("");
-  const [offset, setOffset] = React.useState(0);
+  const [status, setStatus] = useQueryState("status", statusParam);
+  const [level, setLevel] = useQueryState<IssueLevel | "">("level", enumParam(ISSUE_LEVELS, ""));
+  const [search, setSearch] = useQueryState("q", stringParam());
+  const [debounced, setDebounced] = React.useState(search);
+  const [dateFrom, setDateFrom] = useQueryState("from", stringParam());
+  const [dateTo, setDateTo] = useQueryState("to", stringParam());
+  const [offset, setOffset] = useQueryState("offset", numberParam());
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
-  const [trendWindow, setTrendWindow] = React.useState<"24h" | "30d">("24h");
+  const [trendWindow, setTrendWindow] = useQueryState("trend", enumParam(TREND_WINDOWS, "24h"));
 
   React.useEffect(() => {
     const id = setTimeout(() => setDebounced(search), 300);
     return () => clearTimeout(id);
   }, [search]);
 
-  // Reset paging + selection whenever the filters or project change.
+  // Reset paging + selection whenever the filters or project change, but not on
+  // first mount — that would wipe an offset restored from the URL.
+  const mounted = React.useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally resets on filter change
   React.useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
     setOffset(0);
     setSelected(new Set());
   }, [status, level, debounced, dateFrom, dateTo, projectId]);

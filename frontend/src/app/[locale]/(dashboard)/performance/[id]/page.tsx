@@ -22,6 +22,7 @@ import {
   formatRate,
   localizeDigits,
 } from "@/lib/utils";
+import { enumParam, useQueryState } from "@/lib/useQueryState";
 
 const PERIODS = ["1h", "24h", "7d", "14d", "30d"] as const;
 
@@ -34,7 +35,7 @@ export default function TransactionDetailPage({ params }: { params: Promise<{ id
   const { currentProject } = useProjects();
   const projectId = currentProject?.id;
 
-  const [period, setPeriod] = React.useState<(typeof PERIODS)[number]>("24h");
+  const [period, setPeriod] = useQueryState("period", enumParam(PERIODS, "24h"));
   const [selected, setSelected] = React.useState<string | null>(null);
 
   const { data: group, isLoading } = useQuery({

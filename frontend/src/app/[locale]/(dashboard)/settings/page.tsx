@@ -48,6 +48,13 @@ import type {
   Repository,
 } from "@/lib/types";
 import { localizeDigits } from "@/lib/utils";
+import {
+  enumParam,
+  numberParam,
+  type Serde,
+  stringParam,
+  useQueryState,
+} from "@/lib/useQueryState";
 
 const ALL_ROLES: OrgRole[] = ["owner", "admin", "member", "viewer"];
 const EVENT_TYPES: AlertEventType[] = [
@@ -84,7 +91,13 @@ function useApiError() {
 
 export default function SettingsPage() {
   const t = useTranslations("dashboard.settings");
-  const [tab, setTab] = React.useState("organization");
+  const [tab, setTab] = useQueryState(
+    "tab",
+    enumParam(
+      ["organization", "members", "integrations", "webhooks", "ai", "mcp"],
+      "organization"
+    )
+  );
 
   return (
     <div>
@@ -1144,13 +1157,27 @@ function DeliveryLog({ orgId }: { orgId: string }) {
   const qc = useQueryClient();
   const { handle } = useApiError();
 
-  const [success, setSuccess] = React.useState<"" | "true" | "false">("");
-  const [channel, setChannel] = React.useState<ChannelType | "">("");
-  const [event, setEvent] = React.useState<AlertEventType | "">("");
-  const [offset, setOffset] = React.useState(0);
+  const [success, setSuccess] = useQueryState(
+    "success",
+    stringParam() as Serde<"" | "true" | "false">
+  );
+  const [channel, setChannel] = useQueryState(
+    "channel",
+    stringParam() as Serde<ChannelType | "">
+  );
+  const [event, setEvent] = useQueryState("event", stringParam() as Serde<AlertEventType | "">);
+  const [offset, setOffset] = useQueryState("logOffset", numberParam());
 
+  // Reset paging when filters change, but not on first mount (keeps URL offset).
+  const mounted = React.useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally resets paging when filters change
-  React.useEffect(() => setOffset(0), [success, channel, event]);
+  React.useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setOffset(0);
+  }, [success, channel, event]);
 
   const { data } = useQuery({
     queryKey: ["notification-logs", orgId, success, channel, event, offset],

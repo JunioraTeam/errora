@@ -37,6 +37,7 @@ import { api } from "@/lib/api";
 import { toISODate } from "@/lib/datetime";
 import type { AgentRunListResponse, InsightsBreakdown } from "@/lib/types";
 import { cn, formatCompact, formatDuration, formatNumber, localizeDigits } from "@/lib/utils";
+import { enumParam, numberParam, stringParam, useQueryState } from "@/lib/useQueryState";
 
 const hhmm = (d: Date) =>
   `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
@@ -59,14 +60,14 @@ export default function InsightsPage() {
   const { currentProject } = useProjects();
   const projectId = currentProject?.id;
 
-  const [tab, setTab] = React.useState<Tab>("agents");
-  const [period, setPeriod] = React.useState<string>("24h");
+  const [tab, setTab] = useQueryState<Tab>("tab", enumParam(["agents", "mcp"], "agents"));
+  const [period, setPeriod] = useQueryState("period", stringParam("24h"));
   // Custom range: date (Gregorian ISO from the Jalali-aware DatePicker) + time.
-  const [startDate, setStartDate] = React.useState("");
-  const [startTime, setStartTime] = React.useState("00:00");
-  const [endDate, setEndDate] = React.useState("");
-  const [endTime, setEndTime] = React.useState("23:59");
-  const [runsOffset, setRunsOffset] = React.useState(0);
+  const [startDate, setStartDate] = useQueryState("from", stringParam());
+  const [startTime, setStartTime] = useQueryState("fromTime", stringParam("00:00"));
+  const [endDate, setEndDate] = useQueryState("to", stringParam());
+  const [endTime, setEndTime] = useQueryState("toTime", stringParam("23:59"));
+  const [runsOffset, setRunsOffset] = useQueryState("offset", numberParam());
 
   const custom = period === "custom";
   // Either an explicit start/end range (custom) or a relative stats_period preset.
@@ -80,8 +81,17 @@ export default function InsightsPage() {
   }, [custom, startDate, startTime, endDate, endTime, period]);
   const rangeKey = JSON.stringify(range);
 
+  // Reset paging when the window/project changes, but not on first mount
+  // (keeps an offset restored from the URL).
+  const mounted = React.useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset paging when the window/project changes
-  React.useEffect(() => setRunsOffset(0), [rangeKey, projectId]);
+  React.useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setRunsOffset(0);
+  }, [rangeKey, projectId]);
 
   const agents = useQuery({
     queryKey: ["insights-agents", projectId, rangeKey],
