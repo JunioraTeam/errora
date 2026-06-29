@@ -65,7 +65,7 @@ export default function IssuesPage() {
   const projectId = currentProject?.id;
   const orgId = currentOrg?.id;
 
-  const [status, setStatus] = React.useState<IssueStatus | "">("");
+  const [status, setStatus] = React.useState<IssueStatus | "">("unresolved");
   const [level, setLevel] = React.useState<IssueLevel | "">("");
   const [search, setSearch] = React.useState("");
   const [debounced, setDebounced] = React.useState("");
