@@ -113,6 +113,15 @@ query degrades gracefully across Postgres/MySQL/SQLite; see `apps/issues/search.
 - **Lint + format must always pass before finishing any change.** Backend: `ruff check .` and
   `ruff format --check .` clean. Frontend: `npm run lint` (`biome check .`) clean — run
   `npm run format` to auto-fix. CI gates on these, so a red lint blocks the merge.
+  - **Run the project's pinned tools, not a global one.** Frontend CI runs
+    `pnpm exec biome check .` from `frontend/`; a stray global `biome`/`npx biome` can be a
+    different version that silently skips the `organizeImports` assist (CI fails on import
+    order while your local passes). Use `pnpm exec biome check --write .` (or
+    `./node_modules/.bin/biome`) and check the **whole** repo (`.`), not a single file —
+    `biome check .` enforces both formatting and import sorting. Backend: run `ruff` from
+    `backend/` (the repo root has none of the Python config). Note the untracked vendored
+    `sentry/` checkout has its own pre-existing ruff errors — ignore it; scope ruff to
+    `backend/` or your changed files.
 - Keep modules small and single-purpose; match the surrounding code's idiom and comment density.
 - Don't introduce Kafka — the broker is intentionally Redis.
 
