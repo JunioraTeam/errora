@@ -16,8 +16,8 @@ import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/Table";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/datetime";
 import { LOG_LEVELS, type LogEntry, type LogLevel } from "@/lib/types";
-import { cn, localizeDigits } from "@/lib/utils";
 import { enumParam, numberParam, setParam, stringParam, useQueryState } from "@/lib/useQueryState";
+import { cn, localizeDigits } from "@/lib/utils";
 
 const PAGE_SIZE = 50;
 const PERIODS = ["1h", "24h", "7d", "14d", "30d"] as const;

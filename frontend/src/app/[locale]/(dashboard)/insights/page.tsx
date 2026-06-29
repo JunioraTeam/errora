@@ -36,8 +36,8 @@ import { useRouter } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import { toISODate } from "@/lib/datetime";
 import type { AgentRunListResponse, InsightsBreakdown } from "@/lib/types";
-import { cn, formatCompact, formatDuration, formatNumber, localizeDigits } from "@/lib/utils";
 import { enumParam, numberParam, stringParam, useQueryState } from "@/lib/useQueryState";
+import { cn, formatCompact, formatDuration, formatNumber, localizeDigits } from "@/lib/utils";
 
 const hhmm = (d: Date) =>
   `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;

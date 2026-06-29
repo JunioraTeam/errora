@@ -14,6 +14,7 @@ import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/Table";
 import { Link } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import type { TransactionGroupDetail } from "@/lib/types";
+import { enumParam, useQueryState } from "@/lib/useQueryState";
 import {
   cn,
   formatDuration,
@@ -22,7 +23,6 @@ import {
   formatRate,
   localizeDigits,
 } from "@/lib/utils";
-import { enumParam, useQueryState } from "@/lib/useQueryState";
 
 const PERIODS = ["1h", "24h", "7d", "14d", "30d"] as const;
 

@@ -15,8 +15,8 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { api } from "@/lib/api";
-import { cn, formatDuration, formatPercent, formatRate, localizeDigits } from "@/lib/utils";
 import { enumParam, numberParam, stringParam, useQueryState } from "@/lib/useQueryState";
+import { cn, formatDuration, formatPercent, formatRate, localizeDigits } from "@/lib/utils";
 
 const PAGE_SIZE = 50;
 const PERIODS = ["1h", "24h", "7d", "14d", "30d"] as const;

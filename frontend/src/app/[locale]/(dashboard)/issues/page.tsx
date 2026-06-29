@@ -34,8 +34,14 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { useRouter } from "@/i18n/routing";
 import { api } from "@/lib/api";
 import type { BulkAction, Issue, IssueLevel, IssuePriority, IssueStatus } from "@/lib/types";
+import {
+  enumParam,
+  numberParam,
+  type Serde,
+  stringParam,
+  useQueryState,
+} from "@/lib/useQueryState";
 import { cn, formatNumber, localizeDigits } from "@/lib/utils";
-import { enumParam, numberParam, type Serde, stringParam, useQueryState } from "@/lib/useQueryState";
 
 const PAGE_SIZE = 50;
 const TREND_WINDOWS = ["24h", "30d"] as const;
@@ -48,7 +54,11 @@ const ISSUE_LEVELS: IssueLevel[] = ["fatal", "error", "warning", "info", "debug"
 // natural empty string, so it is stored under the explicit "all" sentinel.
 const statusParam: Serde<IssueStatus | ""> = {
   parse: (raw) =>
-    raw === "all" ? "" : ISSUE_STATUSES.includes(raw as IssueStatus) ? (raw as IssueStatus) : "unresolved",
+    raw === "all"
+      ? ""
+      : ISSUE_STATUSES.includes(raw as IssueStatus)
+        ? (raw as IssueStatus)
+        : "unresolved",
   serialize: (v) => (v === "unresolved" ? null : v === "" ? "all" : v),
 };
 

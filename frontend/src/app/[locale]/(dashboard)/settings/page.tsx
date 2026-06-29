@@ -47,7 +47,6 @@ import type {
   OrgRole,
   Repository,
 } from "@/lib/types";
-import { localizeDigits } from "@/lib/utils";
 import {
   enumParam,
   numberParam,
@@ -55,6 +54,7 @@ import {
   stringParam,
   useQueryState,
 } from "@/lib/useQueryState";
+import { localizeDigits } from "@/lib/utils";
 
 const ALL_ROLES: OrgRole[] = ["owner", "admin", "member", "viewer"];
 const EVENT_TYPES: AlertEventType[] = [
@@ -93,10 +93,7 @@ export default function SettingsPage() {
   const t = useTranslations("dashboard.settings");
   const [tab, setTab] = useQueryState(
     "tab",
-    enumParam(
-      ["organization", "members", "integrations", "webhooks", "ai", "mcp"],
-      "organization"
-    )
+    enumParam(["organization", "members", "integrations", "webhooks", "ai", "mcp"], "organization")
   );
 
   return (
@@ -1161,10 +1158,7 @@ function DeliveryLog({ orgId }: { orgId: string }) {
     "success",
     stringParam() as Serde<"" | "true" | "false">
   );
-  const [channel, setChannel] = useQueryState(
-    "channel",
-    stringParam() as Serde<ChannelType | "">
-  );
+  const [channel, setChannel] = useQueryState("channel", stringParam() as Serde<ChannelType | "">);
   const [event, setEvent] = useQueryState("event", stringParam() as Serde<AlertEventType | "">);
   const [offset, setOffset] = useQueryState("logOffset", numberParam());
 
