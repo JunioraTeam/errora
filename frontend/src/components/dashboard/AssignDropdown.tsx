@@ -106,6 +106,7 @@ export function AssignDropdown({
   compact?: boolean;
 }) {
   const t = useTranslations("dashboard.issueDetail");
+  const tc = useTranslations("common");
   const { user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -154,7 +155,7 @@ export function AssignDropdown({
     };
   }, [open, place]);
 
-  const { data: members } = useQuery({
+  const { data: members, isLoading: membersLoading } = useQuery({
     queryKey: ["members", orgId],
     queryFn: () => api.orgs.members(orgId as string),
     enabled: !!orgId,
@@ -261,7 +262,18 @@ export function AssignDropdown({
                     className="h-9 w-full rounded-[var(--radius-sm)] border border-border bg-input ps-8 pe-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
                   />
                 </div>
-                {filtered.length === 0 ? (
+                {membersLoading && !members ? (
+                  <p
+                    className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground"
+                    role="status"
+                  >
+                    <span
+                      aria-hidden
+                      className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                    />
+                    {tc("loading")}
+                  </p>
+                ) : filtered.length === 0 ? (
                   <p className="py-4 text-center text-sm text-muted-foreground">
                     {t("assignEmpty")}
                   </p>
